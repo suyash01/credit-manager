@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "484439133196",
+    "project_id": "credit-manager-930a1",
+    "storage_bucket": "credit-manager-930a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484439133196:android:b92dd13be348140d03f229",
+        "android_client_info": {
+          "package_name": "com.suyash.creditmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8rh1G5c62auWVCD5QALFvwKmRu0KNo_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
