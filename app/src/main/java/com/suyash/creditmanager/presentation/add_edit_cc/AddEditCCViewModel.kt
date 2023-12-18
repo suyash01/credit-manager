@@ -138,23 +138,6 @@ class AddEditCCViewModel @Inject constructor(
                     }
                 }
             }
-            is AddEditCCEvent.DeleteCreditCard -> {
-                viewModelScope.launch {
-                    creditCardUseCases.deleteCreditCard(
-                        CreditCard(
-                            cardName = cardName.value,
-                            last4Digits = last4Digits.value,
-                            expiryDate = expiry.value,
-                            billDate = billDate.value.toIntOrNull()?:0,
-                            dueDate = dueDate.value.toIntOrNull()?:0,
-                            cardType = cardType.value,
-                            limit = limit.value.toIntOrNull()?:0,
-                            id = currentCCId
-                        )
-                    )
-                    _eventFlow.emit(UiEvent.NavigateUp)
-                }
-            }
         }
     }
 

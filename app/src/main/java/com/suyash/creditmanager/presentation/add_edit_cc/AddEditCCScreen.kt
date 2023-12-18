@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -154,7 +153,7 @@ fun AddEditCCScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.dueDate.value.toString(),
+                value = viewModel.dueDate.value,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
                 },
@@ -164,7 +163,7 @@ fun AddEditCCScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.billDate.value.toString(),
+                value = viewModel.billDate.value,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
                 },
@@ -174,20 +173,13 @@ fun AddEditCCScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.limit.value.toString(),
+                value = viewModel.limit.value,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 label = { Text("Limit") }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { viewModel.onEvent(AddEditCCEvent.DeleteCreditCard) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "DELETE")
-            }
         }
     }
 }

@@ -11,5 +11,4 @@ sealed class AddEditCCEvent {
     data class EnteredDueDate(val value: String): AddEditCCEvent()
     data class EnteredLimit(val value: String): AddEditCCEvent()
     data object UpsertCreditCard: AddEditCCEvent()
-    data object DeleteCreditCard: AddEditCCEvent()
 }

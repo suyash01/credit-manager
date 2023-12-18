@@ -7,5 +7,6 @@ import com.suyash.creditmanager.domain.util.OrderType
 data class CreditCardsState(
     val creditCards: List<CreditCard> = emptyList(),
     val creditCardsOrder: CreditCardsOrder = CreditCardsOrder.Name(OrderType.Ascending),
+    val selectedCreditCard: CreditCard? = null,
     val isBottomSheetVisible: Boolean = false
 )

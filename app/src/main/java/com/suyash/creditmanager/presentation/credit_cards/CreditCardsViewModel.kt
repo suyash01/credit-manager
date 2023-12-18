@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,8 +39,16 @@ class CreditCardsViewModel @Inject constructor(
             }
             is CreditCardsEvent.ToggleBottomSheet -> {
                 _state.value = state.value.copy(
+                    selectedCreditCard = event.creditCard,
                     isBottomSheetVisible = !state.value.isBottomSheetVisible
                 )
+            }
+            is CreditCardsEvent.DeleteCreditCard -> {
+                if(event.creditCard != null) {
+                    viewModelScope.launch {
+                        creditCardUseCases.deleteCreditCard(event.creditCard)
+                    }
+                }
             }
         }
     }
