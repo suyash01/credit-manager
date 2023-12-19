@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.util.CardType
+import com.suyash.creditmanager.presentation.util.CCUtils
 
 @Composable
 fun CreditCardItem(
@@ -33,7 +34,7 @@ fun CreditCardItem(
             Image(
                 modifier = Modifier.size(45.dp),
                 painter = painterResource(id = creditCard.cardType.id),
-                contentDescription = "card type"
+                contentDescription = "Card Type"
             )
             Column(
                 modifier = Modifier
@@ -48,6 +49,10 @@ fun CreditCardItem(
                         text = creditCard.cardName,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = CCUtils.currencyMask(creditCard.limit),
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -64,7 +69,9 @@ fun CreditCardItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = creditCard.expiryDate,
+                        text = creditCard.expiryDate.substring(0..1) +
+                                "/" +
+                                creditCard.expiryDate.substring(2),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

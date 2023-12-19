@@ -8,11 +8,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 class CCDateMask: VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val trimmed = if (text.text.length > 4) text.text.substring(0..3) else text.text
-        var out = ""
-        for (i in trimmed.indices) {
-            out += trimmed[i]
-            if (i==1) out += "/"
-        }
+        val out = CCUtils.expiryDateMask(trimmed)
 
         val numberOffsetTranslator = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int =
