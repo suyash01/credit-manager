@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.datastore:datastore:1.0.0")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     testImplementation("junit:junit:4.13.2")

@@ -13,12 +13,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +48,9 @@ fun CreditCardsScreen(
     var isBottomSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+    var openDeleteConfirmationDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Scaffold (
         floatingActionButton = {
@@ -65,7 +70,7 @@ fun CreditCardsScreen(
                     creditCard = creditCard,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .combinedClickable (
+                        .combinedClickable(
                             onClick = { },
                             onLongClick = {
                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -75,6 +80,45 @@ fun CreditCardsScreen(
                         )
                 )
             }
+        }
+        if(openDeleteConfirmationDialog) {
+            AlertDialog(
+                icon = {
+                    Icon(Icons.Filled.Delete, "Delete CC")
+                },
+                title = {
+                    Text(text = "Delete Credit Card?")
+                },
+                text = {
+                    Text(text = "Do you want to delete ${viewModel.state.value.selectedCreditCard?.cardName}")
+                },
+                onDismissRequest = {
+                    openDeleteConfirmationDialog = false
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            openDeleteConfirmationDialog = false
+                            viewModel.onEvent(
+                                CreditCardsEvent.DeleteCreditCard(
+                                    viewModel.state.value.selectedCreditCard
+                                )
+                            )
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openDeleteConfirmationDialog = false
+                        }
+                    ) {
+                        Text("Dismiss")
+                    }
+                }
+            )
         }
         if(isBottomSheetOpen) {
             ModalBottomSheet(
@@ -101,9 +145,7 @@ fun CreditCardsScreen(
                         modifier = Modifier
                             .clickable {
                                 isBottomSheetOpen = false
-                                viewModel.onEvent(CreditCardsEvent.DeleteCreditCard(
-                                    viewModel.state.value.selectedCreditCard)
-                                )
+                                openDeleteConfirmationDialog = true
                             }
                             .fillMaxWidth()
                             .padding(16.dp)
