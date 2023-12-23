@@ -14,8 +14,8 @@ class CCUtils {
             return out
         }
 
-        fun currencyMask(amount: Int): String {
-            return NumberFormat.getCurrencyInstance(Locale("hi", "IN")).format(amount)
+        fun currencyMask(amount: Int, countryCode: String): String {
+            return NumberFormat.getCurrencyInstance(Locale("", countryCode)).format(amount)
         }
     }
 }

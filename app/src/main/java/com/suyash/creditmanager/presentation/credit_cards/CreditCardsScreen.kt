@@ -68,6 +68,7 @@ fun CreditCardsScreen(
             items(state.creditCards) { creditCard ->
                 CreditCardItem(
                     creditCard = creditCard,
+                    countryCode = viewModel.state.value.countryCode,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(

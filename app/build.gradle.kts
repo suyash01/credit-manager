@@ -1,5 +1,6 @@
 plugins {
     kotlin("kapt")
+    kotlin("plugin.serialization")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
@@ -80,6 +81,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.datastore:datastore:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     testImplementation("junit:junit:4.13.2")

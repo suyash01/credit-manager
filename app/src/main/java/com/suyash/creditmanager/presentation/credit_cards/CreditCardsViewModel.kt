@@ -2,8 +2,10 @@ package com.suyash.creditmanager.presentation.credit_cards
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.util.CreditCardsOrder
 import com.suyash.creditmanager.domain.util.OrderType
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreditCardsViewModel @Inject constructor(
-    private val creditCardUseCases: CreditCardUseCases
+    private val creditCardUseCases: CreditCardUseCases,
+    private val dataStore: DataStore<AppSettings>
 ): ViewModel() {
     
     private val _state = mutableStateOf(CreditCardsState())
@@ -26,6 +29,13 @@ class CreditCardsViewModel @Inject constructor(
 
     init {
         getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
+        viewModelScope.launch {
+            dataStore.data.collect {
+                _state.value = state.value.copy(
+                    countryCode = it.countryCode
+                )
+            }
+        }
     }
 
     fun onEvent(event: CreditCardsEvent) {

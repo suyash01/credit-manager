@@ -22,6 +22,7 @@ import com.suyash.creditmanager.presentation.util.CCUtils
 @Composable
 fun CreditCardItem(
     creditCard: CreditCard,
+    countryCode: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -51,7 +52,7 @@ fun CreditCardItem(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = CCUtils.currencyMask(creditCard.limit),
+                        text = CCUtils.currencyMask(creditCard.limit, countryCode),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
