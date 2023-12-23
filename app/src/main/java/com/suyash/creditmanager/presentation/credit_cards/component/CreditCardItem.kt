@@ -53,7 +53,7 @@ fun CreditCardItem(
                     )
                     Text(
                         text = CCUtils.currencyMask(creditCard.limit, countryCode),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
