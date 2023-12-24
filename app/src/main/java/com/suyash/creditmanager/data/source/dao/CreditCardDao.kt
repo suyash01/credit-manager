@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.data.source
+package com.suyash.creditmanager.data.source.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.Flow
 interface CreditCardDao {
 
     @Upsert
-    suspend fun upsertCreditCard(creditCard: CreditCard);
+    suspend fun upsertCreditCard(creditCard: CreditCard)
 
     @Delete
-    suspend fun deleteCreditCard(creditCard: CreditCard);
+    suspend fun deleteCreditCard(creditCard: CreditCard)
 
     @Query("SELECT * FROM credit_cards")
-    fun getCreditCards(): Flow<List<CreditCard>>;
+    fun getCreditCards(): Flow<List<CreditCard>>
 
     @Query("SELECT * FROM credit_cards WHERE id = :id")
-    suspend fun getCreditCard(id: Int): CreditCard?;
+    suspend fun getCreditCard(id: Int): CreditCard?
 }

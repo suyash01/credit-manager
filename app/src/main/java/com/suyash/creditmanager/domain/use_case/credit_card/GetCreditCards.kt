@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.domain.use_case
+package com.suyash.creditmanager.domain.use_case.credit_card
 
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
@@ -7,7 +7,9 @@ import com.suyash.creditmanager.domain.util.OrderType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetCreditCards(private val repository: CreditCardRepository) {
+class GetCreditCards(
+    private val repository: CreditCardRepository
+) {
     operator fun invoke(creditCardOrder: CreditCardsOrder = CreditCardsOrder.Name(OrderType.Ascending)): Flow<List<CreditCard>> {
         return repository.getCreditCards().map { creditCards ->
             when(creditCardOrder.orderType) {

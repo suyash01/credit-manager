@@ -7,15 +7,22 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.room.Room
 import com.suyash.creditmanager.data.repository.CreditCardRepositoryImpl
+import com.suyash.creditmanager.data.repository.TransactionRepositoryImpl
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.data.settings.AppSettingsSerializer
-import com.suyash.creditmanager.data.source.CreditCardDatabase
+import com.suyash.creditmanager.data.source.CreditDatabase
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
-import com.suyash.creditmanager.domain.use_case.AddCreditCard
+import com.suyash.creditmanager.domain.repository.TransactionRepository
+import com.suyash.creditmanager.domain.use_case.credit_card.AddCreditCard
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
-import com.suyash.creditmanager.domain.use_case.DeleteCreditCard
-import com.suyash.creditmanager.domain.use_case.GetCreditCard
-import com.suyash.creditmanager.domain.use_case.GetCreditCards
+import com.suyash.creditmanager.domain.use_case.TransactionUseCase
+import com.suyash.creditmanager.domain.use_case.credit_card.DeleteCreditCard
+import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCard
+import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCards
+import com.suyash.creditmanager.domain.use_case.transaction.AddTransaction
+import com.suyash.creditmanager.domain.use_case.transaction.DeleteTransaction
+import com.suyash.creditmanager.domain.use_case.transaction.GetTransaction
+import com.suyash.creditmanager.domain.use_case.transaction.GetTransactions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,14 +39,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCreditCardDatabase(app: Application): CreditCardDatabase {
-        return Room.databaseBuilder(app, CreditCardDatabase::class.java, CreditCardDatabase.DATABASE_NAME).build()
+    fun provideCreditCardDatabase(app: Application): CreditDatabase {
+        return Room.databaseBuilder(app, CreditDatabase::class.java, CreditDatabase.DATABASE_NAME).build()
     }
 
     @Provides
     @Singleton
-    fun provideCreditCardRepository(db: CreditCardDatabase): CreditCardRepository {
+    fun provideCreditCardRepository(db: CreditDatabase): CreditCardRepository {
         return CreditCardRepositoryImpl(db.creditCardDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepository(db: CreditDatabase): TransactionRepository {
+        return TransactionRepositoryImpl(db.transactionDao)
     }
 
     @Provides
@@ -50,6 +63,17 @@ object AppModule {
             getCreditCard = GetCreditCard(repository),
             upsertCreditCard = AddCreditCard(repository),
             deleteCreditCard = DeleteCreditCard(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionUseCases(repository: TransactionRepository): TransactionUseCase {
+        return TransactionUseCase(
+            getTransactions = GetTransactions(repository),
+            getTransaction = GetTransaction(repository),
+            upsertTransaction = AddTransaction(repository),
+            deleteTransaction = DeleteTransaction(repository)
         )
     }
 

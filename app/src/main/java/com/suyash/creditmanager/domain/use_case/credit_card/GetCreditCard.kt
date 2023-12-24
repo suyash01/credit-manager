@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.domain.use_case
+package com.suyash.creditmanager.domain.use_case.credit_card
 
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
