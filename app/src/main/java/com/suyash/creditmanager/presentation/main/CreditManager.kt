@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
+import com.suyash.creditmanager.presentation.add_edit_txn.AddEditTxnScreen
 import com.suyash.creditmanager.presentation.credit_cards.CreditCardsScreen
 import com.suyash.creditmanager.presentation.settings.SettingsScreen
 import com.suyash.creditmanager.presentation.transactions.TransactionsScreen
@@ -90,6 +91,17 @@ fun CreditManager() {
                     )
                 ) {
                     AddEditCCScreen(navController = navController)
+                }
+                composable(
+                    route = Screen.AddEditTxnScreen.route + "?txnId={txnId}",
+                    arguments = listOf(
+                        navArgument(name = "txnId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
+                    AddEditTxnScreen(navController = navController)
                 }
             }
         }

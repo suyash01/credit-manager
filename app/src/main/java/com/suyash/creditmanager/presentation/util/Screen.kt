@@ -42,6 +42,13 @@ sealed class Screen(
         Icons.Outlined.Add
     )
 
+    data object AddEditTxnScreen: Screen(
+        "add_edit_txn_screen",
+        "Add Transaction",
+        Icons.Filled.Add,
+        Icons.Outlined.Add
+    )
+
     companion object {
         val bottomBarScreens: List<Screen> = listOf(
             CreditCardsScreen,

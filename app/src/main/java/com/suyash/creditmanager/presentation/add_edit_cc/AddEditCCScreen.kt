@@ -16,6 +16,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +57,10 @@ fun AddEditCCScreen(
         }
     }
 
-    Scaffold (
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.onEvent(AddEditCCEvent.UpsertCreditCard) }
@@ -64,8 +68,7 @@ fun AddEditCCScreen(
                 Icon(Icons.Filled.Done, "Save Credit Card")
             }
         }
-    ) {
-        contentPadding ->
+    ) { contentPadding ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()

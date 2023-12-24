@@ -19,9 +19,9 @@ fun TransactionsScreen(
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddEditCCScreen.route) }
+                onClick = { navController.navigate(Screen.AddEditTxnScreen.route) }
             ) {
-                Icon(Icons.Filled.Add, "Add Credit Card")
+                Icon(Icons.Filled.Add, "Add Transaction")
             }
         }
     ) { contentPadding ->
