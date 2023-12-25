@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.domain.model.CreditCard
+import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
 import com.suyash.creditmanager.domain.util.CreditCardsOrder
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -51,8 +53,23 @@ class AddEditTxnViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private var currentTxnId: Int? = null
+
     init {
         getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
+        savedStateHandle.get<Int>("txnId")?.let { txnId ->
+            if(txnId != -1) {
+                viewModelScope.launch {
+                    transactionUseCase.getTransaction(txnId)?.also { transaction ->
+                        currentTxnId = transaction.id
+                        _txnType.value = transaction.type
+                        _txnAmount.value = transaction.amount.toString()
+                        _selectedCreditCard.intValue = transaction.card
+                        _txnDate.value = transaction.date
+                    }
+                }
+            }
+        }
     }
 
     fun onEvent(event: AddEditTxnEvent) {
@@ -70,7 +87,17 @@ class AddEditTxnViewModel @Inject constructor(
                 _txnType.value = event.value
             }
             AddEditTxnEvent.UpsertTransaction -> {
-                //TODO
+                viewModelScope.launch {
+                    transactionUseCase.upsertTransaction(
+                        Transaction(
+                            type = txnType.value,
+                            amount = txnAmount.value.toFloatOrNull()?:0.0F,
+                            card = selectedCreditCard.value,
+                            date = txnDate.value,
+                            id = currentTxnId
+                        )
+                    )
+                }
             }
         }
     }

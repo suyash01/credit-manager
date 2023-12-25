@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,13 +39,7 @@ fun CreditManager() {
                 NavigationBarItem(
                     selected = selected,
                     onClick = {
-                      navController.navigate(screen.route) {
-                          popUpTo(navController.graph.findStartDestination().id) {
-                              saveState = true
-                          }
-                          restoreState = true
-                          launchSingleTop = true
-                      }
+                      navController.navigate(screen.route)
                     },
                     icon = {
                         val icon: ImageVector = if (selected) {
