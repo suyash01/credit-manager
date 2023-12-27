@@ -42,7 +42,6 @@ fun CreditCardsScreen(
     navController: NavController,
     viewModel: CreditCardsViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
     val haptics = LocalHapticFeedback.current
     val bottomSheetState = rememberModalBottomSheetState()
     var isBottomSheetOpen by rememberSaveable {
@@ -65,7 +64,7 @@ fun CreditCardsScreen(
         LazyColumn (
             modifier = Modifier.padding(contentPadding)
         ) {
-            items(state.creditCards) { creditCard ->
+            items(viewModel.state.value.creditCards) { creditCard ->
                 CreditCardItem(
                     creditCard = creditCard,
                     countryCode = viewModel.state.value.countryCode,
