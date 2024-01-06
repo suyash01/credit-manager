@@ -1,5 +1,6 @@
 package com.suyash.creditmanager.presentation.transactions.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.Transaction
+import com.suyash.creditmanager.domain.util.TransactionType
 import com.suyash.creditmanager.presentation.util.CCUtils
+import com.suyash.creditmanager.ui.theme.Credit
+import com.suyash.creditmanager.ui.theme.Debit
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -26,6 +30,7 @@ fun TransactionItem(
 ) {
     Column(
         modifier = modifier
+            .background(color = if(transaction.type == TransactionType.DEBIT) Debit else Credit)
             .padding(16.dp)
     ) {
         Row(

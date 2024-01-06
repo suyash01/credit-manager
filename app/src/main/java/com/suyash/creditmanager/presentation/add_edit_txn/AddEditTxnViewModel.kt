@@ -91,12 +91,13 @@ class AddEditTxnViewModel @Inject constructor(
                     transactionUseCase.upsertTransaction(
                         Transaction(
                             type = txnType.value,
-                            amount = txnAmount.value.toFloatOrNull()?:0.0F,
+                            amount = txnAmount.value.toFloatOrNull() ?: 0.0F,
                             card = selectedCreditCard.value,
                             date = txnDate.value,
                             id = currentTxnId
                         )
                     )
+                    _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
         }

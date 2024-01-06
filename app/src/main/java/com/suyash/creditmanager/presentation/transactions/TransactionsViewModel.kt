@@ -28,7 +28,7 @@ class TransactionsViewModel @Inject constructor(
     private var getTransactionsJob: Job? = null
 
     init {
-        getTransactions(TransactionOrder.Date(OrderType.Ascending))
+        getTransactions(TransactionOrder.Date(OrderType.Descending))
         viewModelScope.launch {
             dataStore.data.collect {
                 _state.value = state.value.copy(

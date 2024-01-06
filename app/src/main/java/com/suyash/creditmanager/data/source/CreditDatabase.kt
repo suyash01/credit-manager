@@ -9,7 +9,8 @@ import com.suyash.creditmanager.domain.model.Transaction
 
 @Database(
     entities = [CreditCard::class, Transaction::class],
-    version = 1
+    version = 1,
+    exportSchema = true
 )
 abstract class CreditDatabase: RoomDatabase() {
 
