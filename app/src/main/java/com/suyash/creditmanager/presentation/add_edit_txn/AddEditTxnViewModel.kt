@@ -53,7 +53,7 @@ class AddEditTxnViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentTxnId: Int? = null
+    var currentTxnId: Int? = null
 
     init {
         getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
@@ -86,7 +86,7 @@ class AddEditTxnViewModel @Inject constructor(
             is AddEditTxnEvent.SelectedTxnType -> {
                 _txnType.value = event.value
             }
-            AddEditTxnEvent.UpsertTransaction -> {
+            is AddEditTxnEvent.UpsertTransaction -> {
                 viewModelScope.launch {
                     transactionUseCase.upsertTransaction(
                         Transaction(
@@ -97,6 +97,11 @@ class AddEditTxnViewModel @Inject constructor(
                             id = currentTxnId
                         )
                     )
+                    _eventFlow.emit(UiEvent.NavigateUp)
+                }
+            }
+            is AddEditTxnEvent.BackPressed -> {
+                viewModelScope.launch {
                     _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }

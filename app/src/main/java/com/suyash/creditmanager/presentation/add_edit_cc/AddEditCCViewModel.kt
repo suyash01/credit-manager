@@ -45,7 +45,7 @@ class AddEditCCViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentCCId: Int? = null
+    var currentCCId: Int? = null
 
     init {
         savedStateHandle.get<Int>("ccId")?.let { ccId ->
@@ -136,6 +136,11 @@ class AddEditCCViewModel @Inject constructor(
                             )
                         )
                     }
+                }
+            }
+            is AddEditCCEvent.BackPressed -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
         }

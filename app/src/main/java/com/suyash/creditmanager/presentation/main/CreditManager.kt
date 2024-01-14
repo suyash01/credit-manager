@@ -28,37 +28,39 @@ import com.suyash.creditmanager.presentation.util.Screen
 fun CreditManager() {
     val navController = rememberNavController()
 
-    Scaffold(bottomBar = {
-        NavigationBar {
-            Screen.bottomBarScreens.forEach { screen ->
-                val selected = navController.currentBackStackEntryAsState()
-                    .value?.destination?.hierarchy?.any {
-                        it.route == screen.route
-                    } == true
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                Screen.bottomBarScreens.forEach { screen ->
+                    val selected = navController.currentBackStackEntryAsState()
+                        .value?.destination?.hierarchy?.any {
+                            it.route == screen.route
+                        } == true
 
-                NavigationBarItem(
-                    selected = selected,
-                    onClick = {
-                      navController.navigate(screen.route)
-                    },
-                    icon = {
-                        val icon: ImageVector = if (selected) {
-                            screen.selectedIcon
-                        } else {
-                            screen.unselectedIcon
+                    NavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                          navController.navigate(screen.route)
+                        },
+                        icon = {
+                            val icon: ImageVector = if (selected) {
+                                screen.selectedIcon
+                            } else {
+                                screen.unselectedIcon
+                            }
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = screen.title
+                            )
+                        },
+                        label = {
+                            Text(text = screen.title)
                         }
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = screen.title
-                        )
-                    },
-                    label = {
-                        Text(text = screen.title)
-                    }
-                )
+                    )
+                }
             }
         }
-    }) {
+    ) {
         paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             NavHost(
@@ -72,7 +74,7 @@ fun CreditManager() {
                     TransactionsScreen(navController = navController)
                 }
                 composable(route = Screen.SettingsScreen.route) {
-                    SettingsScreen()
+                    SettingsScreen(navController = navController)
                 }
                 composable(
                     route = Screen.AddEditCCScreen.route + "?ccId={ccId}",

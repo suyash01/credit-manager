@@ -10,4 +10,5 @@ sealed class AddEditTxnEvent {
     data class EnteredAmount(val value: String): AddEditTxnEvent()
     data class EnteredDate(val value: LocalDate): AddEditTxnEvent()
     data object UpsertTransaction: AddEditTxnEvent()
+    data object BackPressed: AddEditTxnEvent()
 }

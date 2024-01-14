@@ -39,7 +39,6 @@ fun TransactionItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
