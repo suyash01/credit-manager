@@ -15,17 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.Transaction
+import com.suyash.creditmanager.domain.util.DateFormat
 import com.suyash.creditmanager.domain.util.TransactionType
 import com.suyash.creditmanager.presentation.util.CCUtils
 import com.suyash.creditmanager.ui.theme.Credit
 import com.suyash.creditmanager.ui.theme.Debit
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun TransactionItem(
     transaction: Transaction,
     countryCode: String,
-    dateFormat: String,
+    dateFormat: DateFormat,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -65,7 +65,7 @@ fun TransactionItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = transaction.date.format(DateTimeFormatter.ofPattern(dateFormat)),
+                        text = transaction.date.format(dateFormat.formatter),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
+import com.suyash.creditmanager.domain.util.DateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -19,6 +20,9 @@ class SettingsViewModel @Inject constructor(
     private val _countryCode = mutableStateOf("IN")
     val countryCode: State<String> = _countryCode
 
+    private val _dateFormat = mutableStateOf(DateFormat.DDMMYYYY)
+    val dateFormat: State<DateFormat> = _dateFormat
+
     private val _countries = mutableStateOf(listOf(Locale("", "IN")))
     val countries: State<List<Locale>> = _countries
 
@@ -26,6 +30,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             dataStore.data.collect {
                 _countryCode.value = it.countryCode
+                _dateFormat.value = it.dateFormat
             }
         }
 
@@ -45,6 +50,14 @@ class SettingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     dataStore.updateData {
                         it.copy(countryCode = event.countryCode)
+                    }
+                }
+            }
+            is SettingsEvent.UpdateDateFormat -> {
+                _dateFormat.value = event.dateFormat
+                viewModelScope.launch {
+                    dataStore.updateData {
+                        it.copy(dateFormat = event.dateFormat)
                     }
                 }
             }
