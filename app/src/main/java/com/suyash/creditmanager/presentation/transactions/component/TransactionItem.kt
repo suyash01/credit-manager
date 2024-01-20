@@ -14,23 +14,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
-import com.suyash.creditmanager.domain.util.DateFormat
 import com.suyash.creditmanager.domain.util.TransactionType
 import com.suyash.creditmanager.presentation.util.CCUtils
-import com.suyash.creditmanager.ui.theme.Credit
-import com.suyash.creditmanager.ui.theme.Debit
+import com.suyash.creditmanager.ui.theme.CreditBackground
+import com.suyash.creditmanager.ui.theme.CreditForeground
+import com.suyash.creditmanager.ui.theme.DebitBackground
+import com.suyash.creditmanager.ui.theme.DebitForeground
 
 @Composable
 fun TransactionItem(
     transaction: Transaction,
+    creditCard: CreditCard?,
     countryCode: String,
-    dateFormat: DateFormat,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .background(color = if(transaction.type == TransactionType.DEBIT) Debit else Credit)
+            .background(color = if(transaction.type == TransactionType.DEBIT) DebitBackground else CreditBackground)
             .padding(16.dp)
     ) {
         Row(
@@ -48,11 +50,7 @@ fun TransactionItem(
                     Text(
                         text = CCUtils.currencyMask(transaction.amount, countryCode),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = transaction.type.name,
-                        style = MaterialTheme.typography.bodySmall
+                        color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -61,11 +59,11 @@ fun TransactionItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "",
+                        text = creditCard?.cardName?:"Credit Card Name",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = transaction.date.format(dateFormat.formatter),
+                        text = creditCard?.last4Digits?:"XXXX",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

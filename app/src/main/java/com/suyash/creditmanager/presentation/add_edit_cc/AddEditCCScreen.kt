@@ -67,7 +67,7 @@ fun AddEditCCScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = if (viewModel.currentCCId == null) "Add Credit Card" else "Edit Credit Card")
+                    Text(text = if (viewModel.currentCCId.value == 0) "Add Credit Card" else "Edit Credit Card")
                 },
                 navigationIcon = {
                     IconButton(onClick = {viewModel.onEvent(AddEditCCEvent.BackPressed)}) {

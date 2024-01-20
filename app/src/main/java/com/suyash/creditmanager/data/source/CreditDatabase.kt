@@ -1,5 +1,6 @@
 package com.suyash.creditmanager.data.source
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.suyash.creditmanager.data.source.dao.CreditCardDao
@@ -9,8 +10,10 @@ import com.suyash.creditmanager.domain.model.Transaction
 
 @Database(
     entities = [CreditCard::class, Transaction::class],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 abstract class CreditDatabase: RoomDatabase() {
 

@@ -40,7 +40,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCreditCardDatabase(app: Application): CreditDatabase {
-        return Room.databaseBuilder(app, CreditDatabase::class.java, CreditDatabase.DATABASE_NAME).build()
+        return Room
+            .databaseBuilder(app, CreditDatabase::class.java, CreditDatabase.DATABASE_NAME)
+            .build()
     }
 
     @Provides

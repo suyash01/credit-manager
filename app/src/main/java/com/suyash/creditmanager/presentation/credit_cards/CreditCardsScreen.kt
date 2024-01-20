@@ -189,25 +189,31 @@ fun CreditCardsScreen(
                 Column(
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    CreditCardsOrder.defaultSorting.forEach {
+                    CreditCardsOrder.displayNameMap.forEach {
                         Row(
                             modifier = Modifier
                                 .clickable {
                                     isSortBottomSheetOpen = false
-                                    if (viewModel.state.value.creditCardsOrder::class.simpleName == it.key.replace(" ", "")) {
+                                    if (viewModel.state.value.creditCardsOrder::class.simpleName == it.value) {
                                         if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
-                                            viewModel.onEvent(CreditCardsEvent.Order(it.value.second))
+                                            CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                                viewModel.onEvent(CreditCardsEvent.Order(sort.second))
+                                            }
                                         } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
-                                            viewModel.onEvent(CreditCardsEvent.Order(it.value.first))
+                                            CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                                viewModel.onEvent(CreditCardsEvent.Order(sort.first))
+                                            }
                                         }
                                     } else {
-                                        viewModel.onEvent(CreditCardsEvent.Order(it.value.first))
+                                        CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                            viewModel.onEvent(CreditCardsEvent.Order(sort.first))
+                                        }
                                     }
                                 }
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            if (viewModel.state.value.creditCardsOrder::class.simpleName == it.key.replace(" ", "")) {
+                            if (viewModel.state.value.creditCardsOrder::class.simpleName == it.value) {
                                 if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
                                     Icon(Icons.Filled.ArrowUpward, "Ascending")
                                 } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {

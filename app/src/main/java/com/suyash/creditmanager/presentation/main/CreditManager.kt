@@ -75,7 +75,7 @@ fun CreditManager() {
                     TransactionsScreen(navController = navController)
                 }
                 composable(route = Screen.SettingsScreen.route) {
-                    SettingsScreen(navController = navController)
+                    SettingsScreen()
                 }
                 composable(
                     route = Screen.AddEditCCScreen.route + "?ccId={ccId}",

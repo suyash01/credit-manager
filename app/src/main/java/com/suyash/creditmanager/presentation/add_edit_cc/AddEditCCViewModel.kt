@@ -1,6 +1,7 @@
 package com.suyash.creditmanager.presentation.add_edit_cc
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -42,17 +43,18 @@ class AddEditCCViewModel @Inject constructor(
     private val _cardType = mutableStateOf(CardType.VISA)
     val cardType: State<CardType> = _cardType
 
+    private val _currentCCId = mutableIntStateOf(0)
+    val currentCCId: State<Int> = _currentCCId
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-
-    var currentCCId: Int? = null
 
     init {
         savedStateHandle.get<Int>("ccId")?.let { ccId ->
             if(ccId != -1) {
                 viewModelScope.launch {
                     creditCardUseCases.getCreditCard(ccId)?.also { creditCard ->
-                        currentCCId = creditCard.id
+                        _currentCCId.intValue = creditCard.id
                         _last4Digits.value = creditCard.last4Digits
                         _cardName.value = creditCard.cardName
                         _expiry.value = creditCard.expiryDate
@@ -128,7 +130,7 @@ class AddEditCCViewModel @Inject constructor(
                                 dueDate = dueDate.value.toIntOrNull()?:0,
                                 cardType = cardType.value,
                                 limit = limit.value.toIntOrNull()?:0,
-                                id = currentCCId
+                                id = currentCCId.value
                             )
                         )
                         _eventFlow.emit(UiEvent.NavigateUp)

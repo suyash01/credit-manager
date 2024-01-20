@@ -84,7 +84,7 @@ fun AddEditTxnScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = if (viewModel.currentTxnId == null) "Add Transaction" else "Edit Transaction")
+                    Text(text = if (viewModel.currentTxnId.value == 0) "Add Transaction" else "Edit Transaction")
                 },
                 navigationIcon = {
                     IconButton(onClick = {viewModel.onEvent(AddEditTxnEvent.BackPressed)}) {
@@ -126,7 +126,7 @@ fun AddEditTxnScreen(
                         .fillMaxWidth()
                         .menuAnchor(),
                     readOnly = true,
-                    value = viewModel.creditCards.value.find { it.id == viewModel.selectedCreditCard.value }?.cardName?:"",
+                    value = viewModel.getCCDisplay(),
                     onValueChange = { },
                     label = { Text("Credit Card") },
                     trailingIcon = {
@@ -144,7 +144,7 @@ fun AddEditTxnScreen(
                 ) {
                     viewModel.creditCards.value.forEach {
                         DropdownMenuItem(
-                            text = { Text(text = it.cardName) },
+                            text = { Text(text = "${it.cardName} (${it.last4Digits})") },
                             onClick = {
                                 viewModel.onEvent(AddEditTxnEvent.SelectedCard(it))
                                 ccDropdownExpanded = false

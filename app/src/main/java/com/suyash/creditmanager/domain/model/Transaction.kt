@@ -18,7 +18,7 @@ data class Transaction(
     val card: Int,
     val date: LocalDate,
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null
+    val id: Int = 0
 )
 
 class InvalidTransactionException(message: String): Exception(message)

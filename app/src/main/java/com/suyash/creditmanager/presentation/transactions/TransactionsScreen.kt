@@ -89,8 +89,8 @@ fun TransactionsScreen(
                 items(transactions) { transaction ->
                     TransactionItem(
                         transaction = transaction,
+                        creditCard = viewModel.state.value.creditCards[transaction.card],
                         countryCode = viewModel.state.value.countryCode,
-                        dateFormat = viewModel.state.value.dateFormat,
                         modifier = Modifier
                             .fillMaxWidth()
                             .combinedClickable(
@@ -153,14 +153,16 @@ fun TransactionsScreen(
                 sheetState = bottomSheetState,
                 onDismissRequest = { isBottomSheetOpen = false }
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
                     Row(
                         modifier = Modifier
                             .clickable {
                                 isBottomSheetOpen = false
                                 navController.navigate(
-                                    Screen.AddEditCCScreen.route +
-                                            "?ccId=${viewModel.state.value.selectedTransaction?.id}"
+                                    Screen.AddEditTxnScreen.route +
+                                            "?txnId=${viewModel.state.value.selectedTransaction?.id}"
                                 )
                             }
                             .fillMaxWidth()

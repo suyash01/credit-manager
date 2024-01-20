@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.suyash.creditmanager.BuildConfig
 import com.suyash.creditmanager.domain.util.DateFormat
 import java.util.Locale
@@ -45,7 +44,6 @@ import java.util.Locale
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun SettingsScreen(
-    navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uriHandler: UriHandler = LocalUriHandler.current

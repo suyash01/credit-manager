@@ -14,7 +14,7 @@ data class CreditCard(
     var cardType: CardType,
     var limit: Int = 0,
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null
+    val id: Int = 0
 )
 
 class InvalidCreditCardException(message: String): Exception(message)

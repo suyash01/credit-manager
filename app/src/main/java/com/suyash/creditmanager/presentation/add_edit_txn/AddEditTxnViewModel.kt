@@ -50,10 +50,11 @@ class AddEditTxnViewModel @Inject constructor(
     private val _txnAmount = mutableStateOf("")
     val txnAmount: State<String> = _txnAmount
 
+    private val _currentTxnId = mutableIntStateOf(0)
+    val currentTxnId: State<Int> = _currentTxnId
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-
-    var currentTxnId: Int? = null
 
     init {
         getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
@@ -61,7 +62,7 @@ class AddEditTxnViewModel @Inject constructor(
             if(txnId != -1) {
                 viewModelScope.launch {
                     transactionUseCase.getTransaction(txnId)?.also { transaction ->
-                        currentTxnId = transaction.id
+                        _currentTxnId.intValue = transaction.id
                         _txnType.value = transaction.type
                         _txnAmount.value = transaction.amount.toString()
                         _selectedCreditCard.intValue = transaction.card
@@ -81,7 +82,7 @@ class AddEditTxnViewModel @Inject constructor(
                 _txnDate.value = event.value
             }
             is AddEditTxnEvent.SelectedCard -> {
-                _selectedCreditCard.intValue = event.value.id!!
+                _selectedCreditCard.intValue = event.value.id
             }
             is AddEditTxnEvent.SelectedTxnType -> {
                 _txnType.value = event.value
@@ -94,7 +95,7 @@ class AddEditTxnViewModel @Inject constructor(
                             amount = txnAmount.value.toFloatOrNull() ?: 0.0F,
                             card = selectedCreditCard.value,
                             date = txnDate.value,
-                            id = currentTxnId
+                            id = currentTxnId.value
                         )
                     )
                     _eventFlow.emit(UiEvent.NavigateUp)
@@ -113,6 +114,11 @@ class AddEditTxnViewModel @Inject constructor(
         getCreditCardsJob = creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
             _creditCards.value = creditCards
         }.launchIn(viewModelScope)
+    }
+
+    fun getCCDisplay(): String {
+        val cc: CreditCard = creditCards.value.find { it.id == selectedCreditCard.value } ?: return ""
+        return "${cc.cardName} (${cc.last4Digits})"
     }
 
     sealed class UiEvent {
