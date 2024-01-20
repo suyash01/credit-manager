@@ -16,8 +16,8 @@ android {
         applicationId = "com.suyash.creditmanager"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -66,6 +66,7 @@ dependencies {
     val hiltVersion = "2.48"
     val roomVersion = "2.6.1"
     val navVersion = "2.7.6"
+    val retrofitVersion = "2.9.0"
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -85,6 +86,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     testImplementation("junit:junit:4.13.2")

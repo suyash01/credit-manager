@@ -40,7 +40,8 @@ fun CreditManager() {
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
-                          navController.navigate(screen.route)
+                            navController.popBackStack()
+                            navController.navigate(screen.route)
                         },
                         icon = {
                             val icon: ImageVector = if (selected) {

@@ -1,6 +1,6 @@
 package com.suyash.creditmanager.domain.util
 
 sealed class OrderType {
-    object Ascending: OrderType()
-    object Descending: OrderType()
+    data object Ascending: OrderType()
+    data object Descending: OrderType()
 }

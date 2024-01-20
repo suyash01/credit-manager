@@ -11,9 +11,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,6 +39,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.suyash.creditmanager.domain.util.CreditCardsOrder
+import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.presentation.credit_cards.component.CreditCardItem
 import com.suyash.creditmanager.presentation.util.Screen
 
@@ -47,7 +52,13 @@ fun CreditCardsScreen(
 ) {
     val haptics = LocalHapticFeedback.current
     val bottomSheetState = rememberModalBottomSheetState()
-    var isBottomSheetOpen by rememberSaveable {
+    var isItemBottomSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isSortBottomSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isFilterBottomSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
     var openDeleteConfirmationDialog by rememberSaveable {
@@ -58,11 +69,17 @@ fun CreditCardsScreen(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Credit Cards") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                actions = {
+                    IconButton(onClick = { isSortBottomSheetOpen = true }) {
                         Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = "Go Back"
+                            imageVector = Icons.Filled.Sort,
+                            contentDescription = "Sort Credit Cards"
+                        )
+                    }
+                    IconButton(onClick = { isFilterBottomSheetOpen = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.FilterList,
+                            contentDescription = "Filter Credit Cards"
                         )
                     }
                 }
@@ -91,7 +108,7 @@ fun CreditCardsScreen(
                             onLongClick = {
                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                 viewModel.onEvent(CreditCardsEvent.ToggleBottomSheet(creditCard))
-                                isBottomSheetOpen = true
+                                isItemBottomSheetOpen = true
                             }
                         )
                 )
@@ -136,16 +153,18 @@ fun CreditCardsScreen(
                 }
             )
         }
-        if(isBottomSheetOpen) {
+        if(isItemBottomSheetOpen) {
             ModalBottomSheet(
                 sheetState = bottomSheetState,
-                onDismissRequest = { isBottomSheetOpen = false }
+                onDismissRequest = { isItemBottomSheetOpen = false }
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
                     Row(
                         modifier = Modifier
                             .clickable {
-                                isBottomSheetOpen = false
+                                isItemBottomSheetOpen = false
                                 navController.navigate(
                                     Screen.AddEditCCScreen.route +
                                             "?ccId=${viewModel.state.value.selectedCreditCard?.id}"
@@ -160,7 +179,7 @@ fun CreditCardsScreen(
                     Row(
                         modifier = Modifier
                             .clickable {
-                                isBottomSheetOpen = false
+                                isItemBottomSheetOpen = false
                                 openDeleteConfirmationDialog = true
                             }
                             .fillMaxWidth()
@@ -168,6 +187,45 @@ fun CreditCardsScreen(
                     ) {
                         Icon(Icons.Filled.Delete, "Delete CC")
                         Text(text = "Delete", modifier = Modifier.padding(start = 16.dp))
+                    }
+                }
+            }
+        }
+        if(isSortBottomSheetOpen) {
+            ModalBottomSheet(
+                sheetState = bottomSheetState,
+                onDismissRequest = { isSortBottomSheetOpen = false }
+            ) {
+                Column(
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
+                    CreditCardsOrder.defaultSorting.forEach {
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    isSortBottomSheetOpen = false
+                                    if (viewModel.state.value.creditCardsOrder::class.simpleName == it.key.replace(" ", "")) {
+                                        if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
+                                            viewModel.onEvent(CreditCardsEvent.Order(it.value.second))
+                                        } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
+                                            viewModel.onEvent(CreditCardsEvent.Order(it.value.first))
+                                        }
+                                    } else {
+                                        viewModel.onEvent(CreditCardsEvent.Order(it.value.first))
+                                    }
+                                }
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            if (viewModel.state.value.creditCardsOrder::class.simpleName == it.key.replace(" ", "")) {
+                                if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
+                                    Icon(Icons.Filled.ArrowUpward, "Ascending")
+                                } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
+                                    Icon(Icons.Filled.ArrowDownward, "Descending")
+                                }
+                            }
+                            Text(text = it.key, modifier = Modifier.padding(start = 16.dp))
+                        }
                     }
                 }
             }
