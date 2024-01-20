@@ -1,8 +1,6 @@
 name: CI
 on:
   push:
-    branches:
-      - master
     tags:
       - v*
 
@@ -21,6 +19,10 @@ jobs:
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup Android SDK
+        run: |
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "build-tools;29.0.3"
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -44,11 +46,19 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') && github.repository == 'suyash01/credit-manager'
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/apk/
+          releaseDirectory: app/build/outputs/apk/release/
           signingKeyBase64: ${{ secrets.BASE64_KEYSTORE }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Clean up build artifacts
+        if: startsWith(github.ref, 'refs/tags/') && github.repository == 'suyash01/credit-manager'
+        run: |
+          set -e
+          mv app/build/outputs/apk/release/app-release-unsigned-signed.apk credit-manager-${{ env.VERSION_TAG }}.apk
+          sha=`sha256sum credit-manager-${{ env.VERSION_TAG }}.apk | awk '{ print $1 }'`
+          echo "APK_UNIVERSAL_SHA=$sha" >> $GITHUB_ENV
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/') && github.repository == 'suyash01/credit-manager'
@@ -56,8 +66,14 @@ jobs:
         with:
           tag_name: ${{ env.VERSION_TAG }}
           name: Credit Manager ${{ env.VERSION_TAG }}
+          body: |
+            ---
+            ### Checksums
+            | Variant | SHA-256 |
+            | ------- | ------- |
+            | Universal | ${{ env.APK_UNIVERSAL_SHA }}
           files: |
-            app/build/outputs/apk/credit-manager-${{ env.VERSION_TAG }}.apk
+            credit-manager-${{ env.VERSION_TAG }}.apk
           draft: true
           prerelease: false
         env:
