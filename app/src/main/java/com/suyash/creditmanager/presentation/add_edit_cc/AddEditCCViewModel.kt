@@ -72,7 +72,10 @@ class AddEditCCViewModel @Inject constructor(
                 _cardType.value = event.value
             }
             is AddEditCCEvent.EnteredLast4Digits -> {
-                if(event.value.length <= 4 && event.value.toIntOrNull() != null) {
+                if(event.value.isEmpty()) {
+                    _last4Digits.value = event.value
+                }
+                if(event.value.length <= 4 && event.value.toIntOrNull() != null && event.value.toInt() >= 0) {
                     _last4Digits.value = event.value
                 }
             }
@@ -92,7 +95,7 @@ class AddEditCCViewModel @Inject constructor(
                     _dueDate.value = event.value
                 }
                 val value: Int? = event.value.toIntOrNull()
-                if(value != null && event.value.toInt() < 31) {
+                if(value != null && event.value.toInt() > 0 && event.value.toInt() < 31) {
                     _dueDate.value = event.value
                 }
             }
@@ -101,7 +104,7 @@ class AddEditCCViewModel @Inject constructor(
                     _billDate.value = event.value
                 }
                 val value: Int? = event.value.toIntOrNull()
-                if(value != null && value < 31) {
+                if(value != null && event.value.toInt() > 0 && value < 31) {
                     _billDate.value = event.value
                 }
             }
@@ -109,7 +112,7 @@ class AddEditCCViewModel @Inject constructor(
                 if(event.value.isEmpty()) {
                     _limit.value = event.value
                 }
-                if(event.value.toIntOrNull() != null) {
+                if(event.value.toIntOrNull() != null && event.value.toInt() > 0) {
                     _limit.value = event.value
                 }
             }
@@ -150,9 +153,9 @@ class AddEditCCViewModel @Inject constructor(
         if(expiry.toIntOrNull() == null) return false
         return when (expiry.length) {
             1 -> expiry.toInt() < 2
-            2 -> expiry.toInt() < 13
+            2 -> expiry.toInt() in 1..12
             3 -> expiry.toInt() < 130
-            4 -> expiry.toInt() < 1300
+            4 -> expiry.toInt() in 101.. 1299
             else -> false
         }
     }

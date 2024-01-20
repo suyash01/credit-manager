@@ -65,7 +65,7 @@ fun CreditCardItem(
                 ) {
                     Text(
                         text = if (creditCard.cardType == CardType.AMEX) {
-                            "XXXX-XXXXXX-${creditCard.last4Digits}"
+                            "XXXX-XXXXXX-X${creditCard.last4Digits}"
                         } else {
                             "XXXX-XXXX-XXXX-${creditCard.last4Digits}"
                         },

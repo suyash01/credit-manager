@@ -152,7 +152,7 @@ fun AddEditCCScreen(
                 },
                 prefix = {
                     if (viewModel.cardType.value == CardType.AMEX) {
-                        Text("XXXX-XXXXXX-")
+                        Text("XXXX-XXXXXX-X")
                     } else {
                         Text("XXXX-XXXX-XXXX-")
                     }

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,9 +57,6 @@ fun CreditCardsScreen(
     var isSortBottomSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
-    var isFilterBottomSheetOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
     var openDeleteConfirmationDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -74,12 +70,6 @@ fun CreditCardsScreen(
                         Icon(
                             imageVector = Icons.Filled.Sort,
                             contentDescription = "Sort Credit Cards"
-                        )
-                    }
-                    IconButton(onClick = { isFilterBottomSheetOpen = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.FilterList,
-                            contentDescription = "Filter Credit Cards"
                         )
                     }
                 }
