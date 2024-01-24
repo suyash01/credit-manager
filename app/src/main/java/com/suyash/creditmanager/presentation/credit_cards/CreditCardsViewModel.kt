@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
-import com.suyash.creditmanager.domain.util.CreditCardsOrder
+import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -28,7 +28,7 @@ class CreditCardsViewModel @Inject constructor(
     private var getCreditCardsJob: Job? = null
 
     init {
-        getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
+        getCreditCards(CreditCardOrder.Name(OrderType.Ascending))
         viewModelScope.launch {
             dataStore.data.collect {
                 _state.value = state.value.copy(
@@ -63,7 +63,7 @@ class CreditCardsViewModel @Inject constructor(
         }
     }
 
-    private fun getCreditCards(creditCardsOrder: CreditCardsOrder) {
+    private fun getCreditCards(creditCardsOrder: CreditCardOrder) {
         getCreditCardsJob?.cancel()
         getCreditCardsJob = creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
             _state.value = state.value.copy(

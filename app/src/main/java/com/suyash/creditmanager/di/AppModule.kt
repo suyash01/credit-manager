@@ -7,18 +7,25 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.room.Room
 import com.suyash.creditmanager.data.repository.CreditCardRepositoryImpl
+import com.suyash.creditmanager.data.repository.EMIRepositoryImpl
 import com.suyash.creditmanager.data.repository.TransactionRepositoryImpl
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.data.settings.AppSettingsSerializer
 import com.suyash.creditmanager.data.source.CreditDatabase
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
+import com.suyash.creditmanager.domain.repository.EMIRepository
 import com.suyash.creditmanager.domain.repository.TransactionRepository
 import com.suyash.creditmanager.domain.use_case.credit_card.AddCreditCard
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
+import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
 import com.suyash.creditmanager.domain.use_case.credit_card.DeleteCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCards
+import com.suyash.creditmanager.domain.use_case.emi.AddEMI
+import com.suyash.creditmanager.domain.use_case.emi.DeleteEMI
+import com.suyash.creditmanager.domain.use_case.emi.GetEMI
+import com.suyash.creditmanager.domain.use_case.emi.GetEMIs
 import com.suyash.creditmanager.domain.use_case.transaction.AddTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.DeleteTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransaction
@@ -59,6 +66,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideEMIRepository(db: CreditDatabase): EMIRepository {
+        return EMIRepositoryImpl(db.emiDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideCreditCardUseCases(repository: CreditCardRepository): CreditCardUseCases {
         return CreditCardUseCases(
             getCreditCards = GetCreditCards(repository),
@@ -76,6 +89,17 @@ object AppModule {
             getTransaction = GetTransaction(repository),
             upsertTransaction = AddTransaction(repository),
             deleteTransaction = DeleteTransaction(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEMIUseCases(repository: EMIRepository): EMIUseCases {
+        return EMIUseCases(
+            getEMIs = GetEMIs(repository),
+            getEMI = GetEMI(repository),
+            upsertEMI = AddEMI(repository),
+            deleteEMI = DeleteEMI(repository)
         )
     }
 

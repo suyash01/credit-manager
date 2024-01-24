@@ -137,7 +137,7 @@ class AddEditCCViewModel @Inject constructor(
                     } catch (e: InvalidCreditCardException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save note"
+                                message = e.message ?: "Couldn't save credit card"
                             )
                         )
                     }
