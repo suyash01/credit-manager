@@ -55,6 +55,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCreditCardRepository(db: CreditDatabase): CreditCardRepository {
+        db.openHelper.writableDatabase
         return CreditCardRepositoryImpl(db.creditCardDao)
     }
 

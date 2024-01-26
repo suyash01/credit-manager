@@ -123,7 +123,7 @@ fun AddEditEMIScreen(
                 },
                 label = { Text("Name") }
             )
-
+            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.emiAmount.value,

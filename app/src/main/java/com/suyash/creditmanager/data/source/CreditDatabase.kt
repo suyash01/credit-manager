@@ -7,13 +7,15 @@ import com.suyash.creditmanager.data.source.dao.CreditCardDao
 import com.suyash.creditmanager.data.source.dao.EMIDao
 import com.suyash.creditmanager.data.source.dao.TransactionDao
 import com.suyash.creditmanager.domain.model.CreditCard
+import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.model.Transaction
 
 @Database(
-    entities = [CreditCard::class, Transaction::class],
-    version = 2,
+    entities = [CreditCard::class, Transaction::class, EMI::class],
+    version = 3,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3)
     ]
 )
 abstract class CreditDatabase: RoomDatabase() {
