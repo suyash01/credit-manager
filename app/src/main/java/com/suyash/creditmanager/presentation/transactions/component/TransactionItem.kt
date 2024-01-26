@@ -1,6 +1,5 @@
 package com.suyash.creditmanager.presentation.transactions.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,10 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.util.TransactionType
-import com.suyash.creditmanager.presentation.util.CCUtils
-import com.suyash.creditmanager.ui.theme.CreditBackground
+import com.suyash.creditmanager.presentation.util.CMUtils
 import com.suyash.creditmanager.ui.theme.CreditForeground
-import com.suyash.creditmanager.ui.theme.DebitBackground
 import com.suyash.creditmanager.ui.theme.DebitForeground
 
 @Composable
@@ -32,7 +29,6 @@ fun TransactionItem(
 ) {
     Column(
         modifier = modifier
-            .background(color = if(transaction.type == TransactionType.DEBIT) DebitBackground else CreditBackground)
             .padding(16.dp)
     ) {
         Row(
@@ -48,7 +44,7 @@ fun TransactionItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = CCUtils.currencyMask(transaction.amount, countryCode),
+                        text = CMUtils.currencyMask(transaction.amount, countryCode),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )

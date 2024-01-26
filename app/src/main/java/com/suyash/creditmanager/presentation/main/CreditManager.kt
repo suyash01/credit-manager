@@ -18,8 +18,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
+import com.suyash.creditmanager.presentation.add_edit_emis.AddEditEMIScreen
 import com.suyash.creditmanager.presentation.add_edit_txn.AddEditTxnScreen
 import com.suyash.creditmanager.presentation.credit_cards.CreditCardsScreen
+import com.suyash.creditmanager.presentation.emis.EMIsScreen
 import com.suyash.creditmanager.presentation.settings.SettingsScreen
 import com.suyash.creditmanager.presentation.transactions.TransactionsScreen
 import com.suyash.creditmanager.presentation.util.Screen
@@ -74,6 +76,9 @@ fun CreditManager() {
                 composable(route = Screen.TransactionsScreen.route) {
                     TransactionsScreen(navController = navController)
                 }
+                composable(route = Screen.EMIsScreen.route) {
+                    EMIsScreen(navController = navController)
+                }
                 composable(route = Screen.SettingsScreen.route) {
                     SettingsScreen()
                 }
@@ -98,6 +103,17 @@ fun CreditManager() {
                     )
                 ) {
                     AddEditTxnScreen(navController = navController)
+                }
+                composable(
+                    route = Screen.AddEditEMIScreen.route + "?emiId={emiId}",
+                    arguments = listOf(
+                        navArgument(name = "emiId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
+                    AddEditEMIScreen(navController = navController)
                 }
             }
         }

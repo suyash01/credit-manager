@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.suyash.creditmanager.domain.util.CreditCardsOrder
+import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.presentation.credit_cards.component.CreditCardItem
 import com.suyash.creditmanager.presentation.util.Screen
@@ -189,23 +189,23 @@ fun CreditCardsScreen(
                 Column(
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    CreditCardsOrder.displayNameMap.forEach {
+                    CreditCardOrder.displayNameMap.forEach {
                         Row(
                             modifier = Modifier
                                 .clickable {
                                     isSortBottomSheetOpen = false
                                     if (viewModel.state.value.creditCardsOrder::class.simpleName == it.value) {
                                         if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
-                                            CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                            CreditCardOrder.sorting[it.value]?.let { sort ->
                                                 viewModel.onEvent(CreditCardsEvent.Order(sort.second))
                                             }
                                         } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
-                                            CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                            CreditCardOrder.sorting[it.value]?.let { sort ->
                                                 viewModel.onEvent(CreditCardsEvent.Order(sort.first))
                                             }
                                         }
                                     } else {
-                                        CreditCardsOrder.sorting[it.value]?.let { sort ->
+                                        CreditCardOrder.sorting[it.value]?.let { sort ->
                                             viewModel.onEvent(CreditCardsEvent.Order(sort.first))
                                         }
                                     }

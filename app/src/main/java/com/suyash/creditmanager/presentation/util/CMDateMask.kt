@@ -5,10 +5,10 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
-class CCDateMask: VisualTransformation {
+class CMDateMask: VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val trimmed = if (text.text.length > 4) text.text.substring(0..3) else text.text
-        val out = CCUtils.expiryDateMask(trimmed)
+        val out = CMUtils.expiryDateMask(trimmed)
 
         val numberOffsetTranslator = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int =

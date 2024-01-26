@@ -1,11 +1,11 @@
 package com.suyash.creditmanager.domain.util
 
-sealed class CreditCardsOrder(val orderType: OrderType) {
-    class Name(orderType: OrderType): CreditCardsOrder(orderType)
-    class Expiry(orderType: OrderType): CreditCardsOrder(orderType)
-    class Limit(orderType: OrderType): CreditCardsOrder(orderType)
-    class DueDate(orderType: OrderType): CreditCardsOrder(orderType)
-    class BillDate(orderType: OrderType): CreditCardsOrder(orderType)
+sealed class CreditCardOrder(val orderType: OrderType) {
+    class Name(orderType: OrderType): CreditCardOrder(orderType)
+    class Expiry(orderType: OrderType): CreditCardOrder(orderType)
+    class Limit(orderType: OrderType): CreditCardOrder(orderType)
+    class DueDate(orderType: OrderType): CreditCardOrder(orderType)
+    class BillDate(orderType: OrderType): CreditCardOrder(orderType)
 
     companion object {
         val displayNameMap: Map<String, String?> = mapOf(
@@ -16,7 +16,7 @@ sealed class CreditCardsOrder(val orderType: OrderType) {
             "Bill Date" to BillDate::class.simpleName
         )
 
-        val sorting: Map<String?, Pair<CreditCardsOrder, CreditCardsOrder>> = mapOf(
+        val sorting: Map<String?, Pair<CreditCardOrder, CreditCardOrder>> = mapOf(
             Name::class.simpleName to Pair(Name(OrderType.Ascending), Name(OrderType.Descending)),
             Expiry::class.simpleName to Pair(Expiry(OrderType.Ascending), Expiry(OrderType.Descending)),
             Limit::class.simpleName to Pair(Limit(OrderType.Ascending), Limit(OrderType.Descending)),

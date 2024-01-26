@@ -3,10 +3,12 @@ package com.suyash.creditmanager.presentation.util
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,6 +31,12 @@ sealed class Screen(
         Icons.Filled.Receipt,
         Icons.Outlined.Receipt
     )
+    data object EMIsScreen: Screen(
+        "emis_screen",
+        "EMIs",
+        Icons.Filled.Payments,
+        Icons.Outlined.Payments
+    )
     data object SettingsScreen: Screen(
         "settings_screen",
         "Settings",
@@ -37,14 +45,20 @@ sealed class Screen(
     )
     data object AddEditCCScreen: Screen(
         "add_edit_cc_screen",
-        "Add Card",
+        "Add/Edit Card",
         Icons.Filled.Add,
         Icons.Outlined.Add
     )
 
     data object AddEditTxnScreen: Screen(
         "add_edit_txn_screen",
-        "Add Transaction",
+        "Add/Edit Transaction",
+        Icons.Filled.Add,
+        Icons.Outlined.Add
+    )
+    data object AddEditEMIScreen: Screen(
+        "add_edit_emi_screen",
+        "Add/Edit EMI",
         Icons.Filled.Add,
         Icons.Outlined.Add
     )
@@ -53,6 +67,7 @@ sealed class Screen(
         val bottomBarScreens: List<Screen> = listOf(
             CreditCardsScreen,
             TransactionsScreen,
+            EMIsScreen,
             SettingsScreen
         )
     }

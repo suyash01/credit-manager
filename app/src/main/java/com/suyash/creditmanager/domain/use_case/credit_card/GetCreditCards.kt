@@ -2,7 +2,7 @@ package com.suyash.creditmanager.domain.use_case.credit_card
 
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
-import com.suyash.creditmanager.domain.util.CreditCardsOrder
+import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -10,25 +10,25 @@ import kotlinx.coroutines.flow.map
 class GetCreditCards(
     private val repository: CreditCardRepository
 ) {
-    operator fun invoke(creditCardOrder: CreditCardsOrder = CreditCardsOrder.Name(OrderType.Ascending)): Flow<List<CreditCard>> {
+    operator fun invoke(creditCardOrder: CreditCardOrder = CreditCardOrder.Name(OrderType.Ascending)): Flow<List<CreditCard>> {
         return repository.getCreditCards().map { creditCards ->
             when(creditCardOrder.orderType) {
                 is OrderType.Ascending -> {
                     when(creditCardOrder) {
-                        is CreditCardsOrder.Name -> creditCards.sortedBy { it.cardName.lowercase() }
-                        is CreditCardsOrder.Expiry -> creditCards.sortedBy { it.expiryDate }
-                        is CreditCardsOrder.Limit -> creditCards.sortedBy { it.limit }
-                        is CreditCardsOrder.DueDate -> creditCards.sortedBy { it.dueDate }
-                        is CreditCardsOrder.BillDate -> creditCards.sortedBy { it.billDate }
+                        is CreditCardOrder.Name -> creditCards.sortedBy { it.cardName.lowercase() }
+                        is CreditCardOrder.Expiry -> creditCards.sortedBy { it.expiryDate }
+                        is CreditCardOrder.Limit -> creditCards.sortedBy { it.limit }
+                        is CreditCardOrder.DueDate -> creditCards.sortedBy { it.dueDate }
+                        is CreditCardOrder.BillDate -> creditCards.sortedBy { it.billDate }
                     }
                 }
                 is OrderType.Descending -> {
                     when(creditCardOrder) {
-                        is CreditCardsOrder.Name -> creditCards.sortedByDescending { it.cardName.lowercase() }
-                        is CreditCardsOrder.Expiry -> creditCards.sortedByDescending { it.expiryDate }
-                        is CreditCardsOrder.Limit -> creditCards.sortedByDescending { it.limit }
-                        is CreditCardsOrder.DueDate -> creditCards.sortedByDescending { it.dueDate }
-                        is CreditCardsOrder.BillDate -> creditCards.sortedByDescending { it.billDate }
+                        is CreditCardOrder.Name -> creditCards.sortedByDescending { it.cardName.lowercase() }
+                        is CreditCardOrder.Expiry -> creditCards.sortedByDescending { it.expiryDate }
+                        is CreditCardOrder.Limit -> creditCards.sortedByDescending { it.limit }
+                        is CreditCardOrder.DueDate -> creditCards.sortedByDescending { it.dueDate }
+                        is CreditCardOrder.BillDate -> creditCards.sortedByDescending { it.billDate }
                     }
                 }
             }

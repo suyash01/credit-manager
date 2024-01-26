@@ -10,7 +10,7 @@ import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
-import com.suyash.creditmanager.domain.util.CreditCardsOrder
+import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.domain.util.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +39,7 @@ class AddEditTxnViewModel @Inject constructor(
     val dateFormatter: State<DateTimeFormatter> = _dateFormatter
 
     private val _selectedCreditCard = mutableIntStateOf(-1)
-    val selectedCreditCard: State<Int> = _selectedCreditCard
+    private val selectedCreditCard: State<Int> = _selectedCreditCard
 
     private val _txnType = mutableStateOf(TransactionType.DEBIT)
     val txnType: State<TransactionType> = _txnType
@@ -57,7 +57,7 @@ class AddEditTxnViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        getCreditCards(CreditCardsOrder.Name(OrderType.Ascending))
+        getCreditCards(CreditCardOrder.Name(OrderType.Ascending))
         savedStateHandle.get<Int>("txnId")?.let { txnId ->
             if(txnId != -1) {
                 viewModelScope.launch {
@@ -76,7 +76,16 @@ class AddEditTxnViewModel @Inject constructor(
     fun onEvent(event: AddEditTxnEvent) {
         when (event) {
             is AddEditTxnEvent.EnteredAmount -> {
-                _txnAmount.value = event.value
+                if(event.value.isEmpty()) {
+                    _txnAmount.value = event.value
+                }
+                val parts = event.value.split(".")
+                if(event.value.toFloatOrNull() != null
+                    && event.value.toFloat() > 0
+                    && parts.size <= 2
+                    && parts.getOrElse(1) { "0" }.length <= 2) {
+                    _txnAmount.value = event.value
+                }
             }
             is AddEditTxnEvent.EnteredDate -> {
                 _txnDate.value = event.value
@@ -92,7 +101,7 @@ class AddEditTxnViewModel @Inject constructor(
                     transactionUseCase.upsertTransaction(
                         Transaction(
                             type = txnType.value,
-                            amount = txnAmount.value.toFloatOrNull() ?: 0.0F,
+                            amount = txnAmount.value.toFloatOrNull()?:0.0F,
                             card = selectedCreditCard.value,
                             date = txnDate.value,
                             id = currentTxnId.value
@@ -109,7 +118,7 @@ class AddEditTxnViewModel @Inject constructor(
         }
     }
 
-    private fun getCreditCards(creditCardsOrder: CreditCardsOrder) {
+    private fun getCreditCards(creditCardsOrder: CreditCardOrder) {
         getCreditCardsJob?.cancel()
         getCreditCardsJob = creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
             _creditCards.value = creditCards
