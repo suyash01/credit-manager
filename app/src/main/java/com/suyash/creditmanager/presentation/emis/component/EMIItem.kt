@@ -1,6 +1,5 @@
-package com.suyash.creditmanager.presentation.credit_cards.component
+package com.suyash.creditmanager.presentation.emis.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,23 +7,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.suyash.creditmanager.domain.model.CreditCard
-import com.suyash.creditmanager.domain.util.CardType
+import com.suyash.creditmanager.domain.model.EMI
+import com.suyash.creditmanager.domain.util.DateFormat
 import com.suyash.creditmanager.presentation.util.CMUtils
 
 @Composable
-fun CreditCardItem(
-    creditCard: CreditCard,
+fun EMIItem(
+    emi: EMI,
     countryCode: String,
-    modifier: Modifier = Modifier
+    dateFormat: DateFormat,
+    modifier: Modifier
 ) {
     Column(
         modifier = modifier
@@ -33,11 +31,6 @@ fun CreditCardItem(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                modifier = Modifier.size(45.dp),
-                painter = painterResource(id = creditCard.cardType.id),
-                contentDescription = "Card Type"
-            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -49,12 +42,12 @@ fun CreditCardItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = creditCard.cardName,
+                        text = emi.name,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = CMUtils.currencyMask(creditCard.limit.toFloat(), countryCode),
+                        text = CMUtils.currencyMask(emi.amount, countryCode),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -64,17 +57,11 @@ fun CreditCardItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = if (creditCard.cardType == CardType.AMEX) {
-                            "XXXX-XXXXXX-X${creditCard.last4Digits}"
-                        } else {
-                            "XXXX-XXXX-XXXX-${creditCard.last4Digits}"
-                        },
+                        text = CMUtils.formatDate(emi.date, dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = creditCard.expiryDate.substring(0..1) +
-                                "/" +
-                                creditCard.expiryDate.substring(2),
+                        text = CMUtils.formatDate(emi.date.plusMonths(emi.months.toLong()), dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

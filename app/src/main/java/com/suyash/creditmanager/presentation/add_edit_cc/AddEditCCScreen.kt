@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.presentation.util.CCDateMask
+import com.suyash.creditmanager.presentation.util.CMDateMask
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -167,7 +167,7 @@ fun AddEditCCScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredExpiry(newText))
                 },
-                visualTransformation = CCDateMask(),
+                visualTransformation = CMDateMask(),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 label = { Text("Expiry Date") }
             )
