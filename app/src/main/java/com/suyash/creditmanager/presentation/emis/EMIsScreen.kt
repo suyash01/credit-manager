@@ -1,5 +1,7 @@
 package com.suyash.creditmanager.presentation.emis
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +22,7 @@ import com.suyash.creditmanager.presentation.emis.component.EMIItem
 import com.suyash.creditmanager.presentation.util.Screen
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 fun EMIsScreen(
     navController: NavController,
     viewModel: EMIsViewModel = hiltViewModel()
@@ -49,7 +51,18 @@ fun EMIsScreen(
                     emi = emi,
                     countryCode = viewModel.state.value.countryCode,
                     dateFormat = viewModel.state.value.dateFormat,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {
+                                navController.navigate(
+                                    Screen.EMIDetailScreen.route + "?emiId=" + emi.id
+                                )
+                            },
+                            onLongClick = {
+                                // TODO impl
+                            }
+                        )
                 )
             }
         }

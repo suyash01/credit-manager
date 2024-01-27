@@ -21,6 +21,7 @@ import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
 import com.suyash.creditmanager.presentation.add_edit_emis.AddEditEMIScreen
 import com.suyash.creditmanager.presentation.add_edit_txn.AddEditTxnScreen
 import com.suyash.creditmanager.presentation.credit_cards.CreditCardsScreen
+import com.suyash.creditmanager.presentation.emi_details.EMIDetailScreen
 import com.suyash.creditmanager.presentation.emis.EMIsScreen
 import com.suyash.creditmanager.presentation.settings.SettingsScreen
 import com.suyash.creditmanager.presentation.transactions.TransactionsScreen
@@ -114,6 +115,17 @@ fun CreditManager() {
                     )
                 ) {
                     AddEditEMIScreen(navController = navController)
+                }
+                composable(
+                    route = Screen.EMIDetailScreen.route + "?emiId={emiId}",
+                    arguments = listOf(
+                        navArgument(name = "emiId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
+                    EMIDetailScreen(navController = navController)
                 }
             }
         }
