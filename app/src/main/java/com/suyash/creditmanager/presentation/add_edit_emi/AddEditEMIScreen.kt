@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.add_edit_emis
+package com.suyash.creditmanager.presentation.add_edit_emi
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -83,7 +83,7 @@ fun AddEditEMIScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = if (viewModel.currentEMIId.value == 0) "Add EMI" else "Edit EMI")
+                    Text(text = if (viewModel.currentEMIId.value == -1) "Add EMI" else "Edit EMI")
                 },
                 navigationIcon = {
                     IconButton(onClick = {

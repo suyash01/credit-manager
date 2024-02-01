@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.add_edit_emis
+package com.suyash.creditmanager.presentation.add_edit_emi
 
 import com.suyash.creditmanager.domain.model.CreditCard
 import java.time.LocalDate

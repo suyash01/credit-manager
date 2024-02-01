@@ -19,7 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
-import com.suyash.creditmanager.presentation.add_edit_emis.AddEditEMIScreen
+import com.suyash.creditmanager.presentation.add_edit_emi.AddEditEMIScreen
 import com.suyash.creditmanager.presentation.add_edit_txn.AddEditTxnScreen
 import com.suyash.creditmanager.presentation.credit_cards.CreditCardsScreen
 import com.suyash.creditmanager.presentation.emi_details.EMIDetailScreen

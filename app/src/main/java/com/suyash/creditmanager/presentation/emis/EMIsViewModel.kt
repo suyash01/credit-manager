@@ -38,6 +38,23 @@ class EMIsViewModel @Inject constructor(
         }
     }
 
+    fun onEvent(event: EMIsEvent) {
+        when(event) {
+            is EMIsEvent.SelectEMI -> {
+                _state.value = state.value.copy(
+                    selectedEMI = event.emi
+                )
+            }
+            is EMIsEvent.DeleteEMI -> {
+                event.emi?.let {
+                    viewModelScope.launch {
+                        emiUseCases.deleteEMI(event.emi)
+                    }
+                }
+            }
+        }
+    }
+
     private fun getEMIs(emiOrder: EMIOrder) {
         getEMIsJob?.cancel()
         getEMIsJob = emiUseCases.getEMIs(emiOrder).onEach {

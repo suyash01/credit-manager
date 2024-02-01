@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.add_edit_emis
+package com.suyash.creditmanager.presentation.add_edit_emi
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -68,11 +68,13 @@ class AddEditEMIViewModel @Inject constructor(
                 viewModelScope.launch {
                     emiUseCases.getEMI(emiId)?.also {
                         _currentEMIId.intValue = it.id
+                        _name.value = it.name
                         _emiAmount.value = it.name
                         _emiAmount.value = it.amount.toString()
                         _interestRate.value = it.rate.toString()
                         _months.value = it.months.toString()
                         _emiDate.value = it.date
+                        _selectedCreditCard.intValue = it.card?:-1
                     }
                 }
             }

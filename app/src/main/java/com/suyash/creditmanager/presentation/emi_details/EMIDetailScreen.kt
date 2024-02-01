@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.presentation.util.CMUtils
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +96,7 @@ fun EMIDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = CMUtils.currencyMask(viewModel.emi?.amount?:0.0F, viewModel.countryCode),
+                    text = "A: " + CMUtils.currencyMask(viewModel.emi?.amount?:0.0F, viewModel.countryCode),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -108,7 +109,7 @@ fun EMIDetailScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "EMI: " + CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode),
+                text = "E: " + CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -132,17 +133,17 @@ fun EMIDetailScreen(
                                 .weight(1f)
                         ) {
                             Text(
-                                text = CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
+                                text = "P: " + CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
+                                text = "I: " + CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                         Text(
-                            text = CMUtils.currencyMask(it.remainingBalance.toFloat(), viewModel.countryCode),
+                            text = CMUtils.currencyMask(it.remainingBalance.toFloat().absoluteValue, viewModel.countryCode),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
