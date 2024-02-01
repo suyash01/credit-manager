@@ -6,4 +6,5 @@ sealed class SettingsEvent {
 
     data class UpdateCurrency(val countryCode: String): SettingsEvent()
     data class UpdateDateFormat(val dateFormat: DateFormat): SettingsEvent()
+    data class UpdateBottomNavLabel(val shown: Boolean): SettingsEvent()
 }

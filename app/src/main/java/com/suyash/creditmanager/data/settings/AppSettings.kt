@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppSettings(
     val countryCode: String = "IN",
-    val dateFormat: DateFormat = DateFormat.DDMMYYYY
+    val dateFormat: DateFormat = DateFormat.DDMMYYYY,
+    val bottomNavLabel: Boolean = true
 )

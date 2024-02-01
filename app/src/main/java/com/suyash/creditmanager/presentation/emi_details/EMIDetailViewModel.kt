@@ -30,7 +30,7 @@ class EMIDetailViewModel @Inject constructor(
     var countryCode: String = "IN"
     var dateFormat: DateFormat = DateFormat.DDMMYYYY
     var emiAmount: Float = 0.0F
-    var schedule: List<EMISchedule> = emptyList()
+    var schedule: List<Payment> = emptyList()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -40,7 +40,7 @@ class EMIDetailViewModel @Inject constructor(
             viewModelScope.launch {
                 emiUseCases.getEMI(it)?.also { e ->
                     emi = e
-                    calculateEMISchedule(e.amount, e.rate, e.months)
+                    generateAmortizationSchedule(e.amount.toDouble(), e.rate.toDouble(), e.months)
                 }
                 emi?.card?.let {
                     creditCardUseCases.getCreditCard(it)?.also { cc ->
@@ -65,25 +65,34 @@ class EMIDetailViewModel @Inject constructor(
         }
     }
 
-    private fun calculateEMISchedule(startingAmount: Float, interestRate: Float, tenure: Int) {
-        val schedule: MutableList<EMISchedule> = mutableListOf()
-        var principal: Float = startingAmount
-        val monthlyRate: Float = interestRate/1200
-        val emi: Float = startingAmount*monthlyRate*(1+monthlyRate).pow(tenure)/((1+monthlyRate).pow(tenure)-1)
-        for (i in 1..tenure) {
-            val interest = principal*(monthlyRate)
-            val principalPaid: Float = emi - interest
-            principal -= principalPaid
-            schedule.add(EMISchedule(principalPaid, interest, principal))
+    private fun generateAmortizationSchedule(loanAmount: Double, annualInterestRate: Double, loanTermInMonths: Int) {
+        val monthlyInterestRate = annualInterestRate / 12 / 100
+        val monthlyPayment = loanAmount *
+                (monthlyInterestRate * (1 + monthlyInterestRate).pow(loanTermInMonths.toDouble())) /
+                ((1 + monthlyInterestRate).pow(loanTermInMonths.toDouble()) - 1)
+
+        var remainingBalance = loanAmount
+        val payments = mutableListOf<Payment>()
+
+        for (i in 1..loanTermInMonths) {
+            val interestPayment = remainingBalance * monthlyInterestRate
+            val principalPayment = monthlyPayment - interestPayment
+            remainingBalance -= principalPayment
+
+            val payment = Payment(i, monthlyPayment, principalPayment, interestPayment, remainingBalance)
+            payments.add(payment)
         }
-        this.emiAmount = emi
-        this.schedule = schedule.toList()
+
+        emiAmount = monthlyPayment.toFloat()
+        schedule = payments
     }
 
-    data class EMISchedule(
-        val principal: Float,
-        val interest: Float,
-        val amount: Float
+    data class Payment(
+        val paymentNumber: Int,
+        val paymentAmount: Double,
+        val principalAmount: Double,
+        val interestAmount: Double,
+        val remainingBalance: Double
     )
 
     sealed class UiEvent {

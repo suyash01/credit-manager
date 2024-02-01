@@ -23,6 +23,9 @@ class SettingsViewModel @Inject constructor(
     private val _dateFormat = mutableStateOf(DateFormat.DDMMYYYY)
     val dateFormat: State<DateFormat> = _dateFormat
 
+    private val _bottomNavLabel = mutableStateOf(true)
+    val bottomNavLabel: State<Boolean> = _bottomNavLabel
+
     private val _countries = mutableStateOf(listOf(Locale("", "IN")))
     val countries: State<List<Locale>> = _countries
 
@@ -31,6 +34,7 @@ class SettingsViewModel @Inject constructor(
             dataStore.data.collect {
                 _countryCode.value = it.countryCode
                 _dateFormat.value = it.dateFormat
+                _bottomNavLabel.value = it.bottomNavLabel
             }
         }
 
@@ -58,6 +62,14 @@ class SettingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     dataStore.updateData {
                         it.copy(dateFormat = event.dateFormat)
+                    }
+                }
+            }
+            is SettingsEvent.UpdateBottomNavLabel -> {
+                _bottomNavLabel.value = event.shown
+                viewModelScope.launch {
+                    dataStore.updateData {
+                        it.copy(bottomNavLabel = event.shown)
                     }
                 }
             }

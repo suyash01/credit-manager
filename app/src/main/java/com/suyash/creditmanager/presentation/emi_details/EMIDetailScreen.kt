@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
@@ -108,36 +108,41 @@ fun EMIDetailScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode),
+                text = "EMI: " + CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "*Can have rounding errors",
+                style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(16.dp))
             Divider()
             LazyColumn {
-                itemsIndexed(viewModel.schedule) {i, schedule ->
+                items(viewModel.schedule) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = (i+1).toString())
+                        Text(text = it.paymentNumber.toString())
                         Column(
                             modifier = Modifier
                                 .padding(start = 16.dp)
                                 .weight(1f)
                         ) {
                             Text(
-                                text = CMUtils.currencyMask(schedule.principal, viewModel.countryCode),
+                                text = CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = CMUtils.currencyMask(schedule.interest, viewModel.countryCode),
+                                text = CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                         Text(
-                            text = CMUtils.currencyMask(schedule.amount, viewModel.countryCode),
+                            text = CMUtils.currencyMask(it.remainingBalance.toFloat(), viewModel.countryCode),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }

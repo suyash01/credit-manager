@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,7 +29,9 @@ import com.suyash.creditmanager.presentation.transactions.TransactionsScreen
 import com.suyash.creditmanager.presentation.util.Screen
 
 @Composable
-fun CreditManager() {
+fun CreditManager(
+    viewModel: CreditManagerViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -40,27 +43,48 @@ fun CreditManager() {
                             it.route == screen.route
                         } == true
 
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            navController.popBackStack()
-                            navController.navigate(screen.route)
-                        },
-                        icon = {
-                            val icon: ImageVector = if (selected) {
-                                screen.selectedIcon
-                            } else {
-                                screen.unselectedIcon
+                    if (viewModel.bottomNavLabel.value) {
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = {
+                                navController.popBackStack()
+                                navController.navigate(screen.route)
+                            },
+                            icon = {
+                                val icon: ImageVector = if (selected) {
+                                    screen.selectedIcon
+                                } else {
+                                    screen.unselectedIcon
+                                }
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = screen.title
+                                )
+                            },
+                            label = {
+                                Text(text = screen.title)
                             }
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = screen.title
-                            )
-                        },
-                        label = {
-                            Text(text = screen.title)
-                        }
-                    )
+                        )
+                    } else {
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = {
+                                navController.popBackStack()
+                                navController.navigate(screen.route)
+                            },
+                            icon = {
+                                val icon: ImageVector = if (selected) {
+                                    screen.selectedIcon
+                                } else {
+                                    screen.unselectedIcon
+                                }
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = screen.title
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
