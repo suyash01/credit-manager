@@ -49,6 +49,9 @@ class AddEditEMIViewModel @Inject constructor(
     private val _interestRate = mutableStateOf("")
     val interestRate: State<String> = _interestRate
 
+    private val _taxRate = mutableStateOf("")
+    val taxRate: State<String> = _taxRate
+
     private val _months = mutableStateOf("")
     val months: State<String> = _months
 
@@ -72,6 +75,7 @@ class AddEditEMIViewModel @Inject constructor(
                         _emiAmount.value = it.name
                         _emiAmount.value = it.amount.toString()
                         _interestRate.value = it.rate.toString()
+                        _taxRate.value = it.taxRate?.toString()?:""
                         _months.value = it.months.toString()
                         _emiDate.value = it.date
                         _selectedCreditCard.intValue = it.card?:-1
@@ -110,6 +114,18 @@ class AddEditEMIViewModel @Inject constructor(
                     _interestRate.value = event.value
                 }
             }
+            is AddEditEMIEvent.EnteredTaxRate -> {
+                if(event.value.isEmpty()) {
+                    _interestRate.value = event.value
+                }
+                val parts = event.value.split(".")
+                if(event.value.toFloatOrNull() != null
+                    && event.value.toFloat() > 0
+                    && parts.size <= 2
+                    && parts.getOrElse(1) { "0" }.length <= 2) {
+                    _taxRate.value = event.value
+                }
+            }
             is AddEditEMIEvent.EnteredMonths -> {
                 if(event.value.isEmpty()) {
                     _months.value = event.value
@@ -128,11 +144,13 @@ class AddEditEMIViewModel @Inject constructor(
                 viewModelScope.launch {
                     emiUseCases.upsertEMI(
                         EMI(
+                            id = currentEMIId.value,
                             name = name.value,
                             amount = emiAmount.value.toFloatOrNull()?:0.0F,
                             rate = interestRate.value.toFloatOrNull()?:0.0F,
                             months = months.value.toIntOrNull()?:0,
                             date = emiDate.value,
+                            taxRate = taxRate.value.toFloatOrNull(),
                             card = if(_selectedCreditCard.intValue != -1) _selectedCreditCard.intValue else null
                         )
                     )

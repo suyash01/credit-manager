@@ -217,6 +217,16 @@ fun AddEditEMIScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.taxRate.value,
+                onValueChange = { newText ->
+                    viewModel.onEvent(AddEditEMIEvent.EnteredTaxRate(newText))
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                label = { Text("Tax Rate") }
+            )
             if(openDatePickerDialog) {
                 val datePickerState = rememberDatePickerState(
                     initialSelectedDateMillis = TimeUnit.DAYS.toMillis(viewModel.emiDate.value.toEpochDay())

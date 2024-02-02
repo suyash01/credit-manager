@@ -16,6 +16,7 @@ data class EMI(
     val months: Int,
     val card: Int?,
     val date: LocalDate,
+    val taxRate: Float?,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )
