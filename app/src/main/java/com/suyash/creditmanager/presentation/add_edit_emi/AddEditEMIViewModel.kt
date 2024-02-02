@@ -58,7 +58,7 @@ class AddEditEMIViewModel @Inject constructor(
     private val _emiDate = mutableStateOf(LocalDate.now())
     val emiDate: State<LocalDate> = _emiDate
 
-    private val _currentEMIId = mutableIntStateOf(-1)
+    private val _currentEMIId = mutableIntStateOf(0)
     val currentEMIId: State<Int> = _currentEMIId
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()

@@ -60,7 +60,7 @@ fun EMIItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = CMUtils.formatDate(emi.date.plusMonths(emi.months.toLong()), dateFormat),
+                        text = CMUtils.formatDate(emi.date.plusMonths(emi.months.toLong() - 1), dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
