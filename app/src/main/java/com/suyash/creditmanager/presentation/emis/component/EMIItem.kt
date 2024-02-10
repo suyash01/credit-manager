@@ -12,10 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.util.DateFormat
 import com.suyash.creditmanager.presentation.util.CMUtils
+import java.time.LocalDate
 
 @Composable
 fun EMIItem(
@@ -60,6 +62,10 @@ fun EMIItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
+                        text = "${CMUtils.calculateEMIPaid(emi.date, emi.months)}/${emi.months}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Text(
                         text = CMUtils.formatDate(emi.date.plusMonths(emi.months.toLong() - 1), dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
@@ -67,4 +73,17 @@ fun EMIItem(
             }
         }
     }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+fun EMIItemPreview() {
+    EMIItem(
+        emi = EMI("Preview EMI", 10000F, 15.99F, 9, null, LocalDate.now().minusMonths(3), 18F),
+        countryCode = "IN",
+        dateFormat = DateFormat.DDMMYYYY,
+        modifier = Modifier.fillMaxWidth()
+    )
 }

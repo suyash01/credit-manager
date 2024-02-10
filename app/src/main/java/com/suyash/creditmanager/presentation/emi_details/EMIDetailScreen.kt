@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,7 +70,7 @@ fun EMIDetailScreen(
                         viewModel.onEvent(EMIDetailEvent.BackPressed)
                     }) {
                         Icon(
-                            Icons.Filled.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Go Back"
                         )
                     }
@@ -82,7 +82,7 @@ fun EMIDetailScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = viewModel.emi?.name?:"",
@@ -96,7 +96,7 @@ fun EMIDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "A: " + CMUtils.currencyMask(viewModel.emi?.amount?:0.0F, viewModel.countryCode),
+                    text = "P: ${CMUtils.currencyMask(viewModel.emi?.amount?:0.0F, viewModel.countryCode)} @ ${viewModel.emi?.rate}%",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -109,17 +109,25 @@ fun EMIDetailScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "E: " + CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode),
+                text = "EMI: ${CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode)} X ${viewModel.emi?.months} = ${CMUtils.currencyMask(viewModel.totalAmount, viewModel.countryCode)}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
+            if((viewModel.emi?.taxRate?.toInt() ?: 0) != 0) {
+                Text(
+                    text = "TToI: ${CMUtils.currencyMask(viewModel.schedule.sumOf { it.taxOnInterest }.toFloat(), viewModel.countryCode)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Text(
                 text = "*Can have rounding errors",
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             LazyColumn {
                 items(viewModel.schedule) {
                     Row(
@@ -133,14 +141,21 @@ fun EMIDetailScreen(
                                 .weight(1f)
                         ) {
                             Text(
-                                text = "P: " + CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
+                                text = "PP: " + CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "I: " + CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
+                                text = "IP: " + CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
                                 style = MaterialTheme.typography.bodySmall
                             )
+                            if(it.taxOnInterest.toInt() != 0) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "ToI: " + CMUtils.currencyMask(it.taxOnInterest.toFloat(), viewModel.countryCode),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                         Text(
                             text = CMUtils.currencyMask(it.remainingBalance.toFloat().absoluteValue, viewModel.countryCode),

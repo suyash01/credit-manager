@@ -16,8 +16,8 @@ android {
         applicationId = "com.suyash.creditmanager"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.0.7"
+        versionCode = 9
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -61,7 +61,7 @@ android {
 dependencies {
     val hiltVersion = "2.48.1"
     val roomVersion = "2.6.1"
-    val navVersion = "2.7.6"
+    val navVersion = "2.7.7"
     val retrofitVersion = "2.9.0"
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -70,8 +70,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.1.2")
-    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 //    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
 //    implementation("com.google.firebase:firebase-analytics")
 //    implementation("com.google.firebase:firebase-firestore")

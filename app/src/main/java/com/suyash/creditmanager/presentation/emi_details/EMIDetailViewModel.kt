@@ -30,6 +30,7 @@ class EMIDetailViewModel @Inject constructor(
     var countryCode: String = "IN"
     var dateFormat: DateFormat = DateFormat.DDMMYYYY
     var emiAmount: Float = 0.0F
+    var totalAmount: Float = 0.0F
     var schedule: List<Payment> = emptyList()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -40,7 +41,7 @@ class EMIDetailViewModel @Inject constructor(
             viewModelScope.launch {
                 emiUseCases.getEMI(it)?.also { e ->
                     emi = e
-                    generateAmortizationSchedule(e.amount.toDouble(), e.rate.toDouble(), e.months)
+                    generateAmortizationSchedule(e.amount.toDouble(), e.rate.toDouble(), e.months, e.taxRate?.toDouble()?:0.0)
                 }
                 emi?.card?.let {
                     creditCardUseCases.getCreditCard(it)?.also { cc ->
@@ -65,7 +66,7 @@ class EMIDetailViewModel @Inject constructor(
         }
     }
 
-    private fun generateAmortizationSchedule(loanAmount: Double, annualInterestRate: Double, loanTermInMonths: Int) {
+    private fun generateAmortizationSchedule(loanAmount: Double, annualInterestRate: Double, loanTermInMonths: Int, taxRate: Double) {
         val monthlyInterestRate = annualInterestRate / 12 / 100
         val monthlyPayment = loanAmount *
                 (monthlyInterestRate * (1 + monthlyInterestRate).pow(loanTermInMonths.toDouble())) /
@@ -76,14 +77,16 @@ class EMIDetailViewModel @Inject constructor(
 
         for (i in 1..loanTermInMonths) {
             val interestPayment = remainingBalance * monthlyInterestRate
+            val taxOnInterest = interestPayment * (taxRate / 100)
             val principalPayment = monthlyPayment - interestPayment
             remainingBalance -= principalPayment
 
-            val payment = Payment(i, monthlyPayment, principalPayment, interestPayment, remainingBalance)
+            val payment = Payment(i, monthlyPayment, principalPayment, interestPayment, remainingBalance, taxOnInterest)
             payments.add(payment)
         }
 
         emiAmount = monthlyPayment.toFloat()
+        totalAmount = (monthlyPayment * loanTermInMonths).toFloat()
         schedule = payments
     }
 
@@ -92,7 +95,8 @@ class EMIDetailViewModel @Inject constructor(
         val paymentAmount: Double,
         val principalAmount: Double,
         val interestAmount: Double,
-        val remainingBalance: Double
+        val remainingBalance: Double,
+        val taxOnInterest: Double
     )
 
     sealed class UiEvent {
