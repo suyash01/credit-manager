@@ -104,6 +104,7 @@ class AddEditTxnViewModel @Inject constructor(
                             amount = txnAmount.value.toFloatOrNull()?:0.0F,
                             card = selectedCreditCard.value,
                             date = txnDate.value,
+                            category = null,
                             id = currentTxnId.value
                         )
                     )

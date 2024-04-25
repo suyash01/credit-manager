@@ -13,6 +13,7 @@ data class CreditCard(
     var dueDate: Int,
     var cardType: CardType,
     var limit: Int = 0,
+    var bankName: String?,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )

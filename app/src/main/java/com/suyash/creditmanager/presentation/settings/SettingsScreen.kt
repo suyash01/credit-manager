@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.Card
@@ -40,13 +41,16 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.suyash.creditmanager.BuildConfig
 import com.suyash.creditmanager.domain.util.DateFormat
+import com.suyash.creditmanager.presentation.util.Screen
 import java.util.Locale
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun SettingsScreen(
+    navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uriHandler: UriHandler = LocalUriHandler.current
@@ -131,6 +135,34 @@ fun SettingsScreen(
             }
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Screen.TxnCategoriesScreen.route)
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Category,
+                    contentDescription = "Transaction Categories",
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Transaction Categories",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "${viewModel.txnCategoryCount} Categories",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -198,7 +230,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     LazyColumn(
                         modifier = Modifier

@@ -2,12 +2,14 @@ package com.suyash.creditmanager.presentation.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Payments
@@ -70,6 +72,13 @@ sealed class Screen(
         "EMI Detail",
         Icons.Filled.Info,
         Icons.Outlined.Info
+    )
+
+    data object TxnCategoriesScreen: Screen(
+        "txn_categories",
+        "Transaction Categories",
+        Icons.Filled.Category,
+        Icons.Outlined.Category
     )
 
     companion object {

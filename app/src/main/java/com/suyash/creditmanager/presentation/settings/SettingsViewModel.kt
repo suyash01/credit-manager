@@ -6,14 +6,19 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
 import com.suyash.creditmanager.domain.util.DateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val txnCategoryUseCase: TxnCategoryUseCase,
     private val dataStore: DataStore<AppSettings>
 ) : ViewModel() {
 
@@ -29,7 +34,13 @@ class SettingsViewModel @Inject constructor(
     private val _countries = mutableStateOf(listOf(Locale("", "IN")))
     val countries: State<List<Locale>> = _countries
 
+    var txnCategoryCount: Int = 0
+
+    private var getTxnCategoryCountJob: Job? = null
+
     init {
+        getTxnCategoryCount()
+
         viewModelScope.launch {
             dataStore.data.collect {
                 _countryCode.value = it.countryCode
@@ -74,5 +85,12 @@ class SettingsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getTxnCategoryCount() {
+        getTxnCategoryCountJob?.cancel()
+        getTxnCategoryCountJob = txnCategoryUseCase.getTxnCategories().onEach {
+            txnCategoryCount = it.size
+        }.launchIn(viewModelScope)
     }
 }

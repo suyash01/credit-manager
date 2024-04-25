@@ -28,7 +28,7 @@ class CMUtils {
         }
 
         fun calculateEMIPaid(emiDate: LocalDate, months: Int): Int {
-            val emiPaid: Int = ChronoUnit.MONTHS.between(emiDate, LocalDate.now()).toInt()
+            val emiPaid: Int = ChronoUnit.MONTHS.between(emiDate, LocalDate.now()).toInt() + 1
             return min(emiPaid, months)
         }
     }

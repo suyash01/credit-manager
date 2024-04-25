@@ -201,6 +201,15 @@ fun AddEditCCScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 label = { Text("Limit") }
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.bankName.value,
+                onValueChange = { newText ->
+                    viewModel.onEvent(AddEditCCEvent.EnteredBankName(newText))
+                },
+                label = { Text("Bank Name") }
+            )
         }
     }
 }

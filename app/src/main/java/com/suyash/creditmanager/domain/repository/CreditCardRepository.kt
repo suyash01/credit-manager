@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface CreditCardRepository {
 
-    suspend fun upsertCreditCard(creditCard: CreditCard);
+    suspend fun upsertCreditCard(creditCard: CreditCard)
 
-    suspend fun deleteCreditCard(creditCard: CreditCard);
+    suspend fun deleteCreditCard(creditCard: CreditCard)
 
-    fun getCreditCards(): Flow<List<CreditCard>>;
+    fun getCreditCards(): Flow<List<CreditCard>>
 
-    suspend fun getCreditCard(id: Int): CreditCard?;
+    suspend fun getCreditCard(id: Int): CreditCard?
 }

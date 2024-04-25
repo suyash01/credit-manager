@@ -9,16 +9,19 @@ import androidx.room.Room
 import com.suyash.creditmanager.data.repository.CreditCardRepositoryImpl
 import com.suyash.creditmanager.data.repository.EMIRepositoryImpl
 import com.suyash.creditmanager.data.repository.TransactionRepositoryImpl
+import com.suyash.creditmanager.data.repository.TxnCategoryRepositoryImpl
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.data.settings.AppSettingsSerializer
 import com.suyash.creditmanager.data.source.CreditDatabase
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
 import com.suyash.creditmanager.domain.repository.EMIRepository
 import com.suyash.creditmanager.domain.repository.TransactionRepository
-import com.suyash.creditmanager.domain.use_case.credit_card.AddCreditCard
+import com.suyash.creditmanager.domain.repository.TxnCategoryRepository
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.credit_card.AddCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.DeleteCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCards
@@ -30,6 +33,10 @@ import com.suyash.creditmanager.domain.use_case.transaction.AddTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.DeleteTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransactions
+import com.suyash.creditmanager.domain.use_case.txn_category.AddTxnCategory
+import com.suyash.creditmanager.domain.use_case.txn_category.DeleteTxnCategory
+import com.suyash.creditmanager.domain.use_case.txn_category.GetTxnCategories
+import com.suyash.creditmanager.domain.use_case.txn_category.GetTxnCategory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,6 +80,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideTxnCategoryRepository(db: CreditDatabase): TxnCategoryRepository {
+        return TxnCategoryRepositoryImpl(db.txnCategoryDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideCreditCardUseCases(repository: CreditCardRepository): CreditCardUseCases {
         return CreditCardUseCases(
             getCreditCards = GetCreditCards(repository),
@@ -101,6 +114,17 @@ object AppModule {
             getEMI = GetEMI(repository),
             upsertEMI = AddEMI(repository),
             deleteEMI = DeleteEMI(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTxnCategoryUseCases(repository: TxnCategoryRepository): TxnCategoryUseCase {
+        return TxnCategoryUseCase(
+            getTxnCategories = GetTxnCategories(repository),
+            getTxnCategory = GetTxnCategory(repository),
+            upsertTxnCategory = AddTxnCategory(repository),
+            deleteTxnCategory = DeleteTxnCategory(repository)
         )
     }
 

@@ -1,0 +1,15 @@
+package com.suyash.creditmanager.domain.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.suyash.creditmanager.domain.util.TransactionType
+
+@Entity(
+    tableName = "txn_categories"
+)
+data class TxnCategory(
+    val type: TransactionType,
+    val name: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0
+)

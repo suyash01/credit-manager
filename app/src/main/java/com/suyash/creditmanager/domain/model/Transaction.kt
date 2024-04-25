@@ -17,6 +17,7 @@ data class Transaction(
     val amount: Float,
     val card: Int,
     val date: LocalDate,
+    val category: String?,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )

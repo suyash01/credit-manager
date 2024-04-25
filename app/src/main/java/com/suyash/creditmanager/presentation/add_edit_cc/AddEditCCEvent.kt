@@ -10,6 +10,7 @@ sealed class AddEditCCEvent {
     data class EnteredBillDate(val value: String): AddEditCCEvent()
     data class EnteredDueDate(val value: String): AddEditCCEvent()
     data class EnteredLimit(val value: String): AddEditCCEvent()
+    data class EnteredBankName(val value: String): AddEditCCEvent()
     data object UpsertCreditCard: AddEditCCEvent()
     data object BackPressed: AddEditCCEvent()
 }

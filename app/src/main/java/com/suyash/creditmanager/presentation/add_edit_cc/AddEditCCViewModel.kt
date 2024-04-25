@@ -40,6 +40,9 @@ class AddEditCCViewModel @Inject constructor(
     private val _limit = mutableStateOf("")
     val limit: State<String> = _limit
 
+    private val _bankName = mutableStateOf("")
+    val bankName: State<String> = _bankName
+
     private val _cardType = mutableStateOf(CardType.VISA)
     val cardType: State<CardType> = _cardType
 
@@ -61,6 +64,7 @@ class AddEditCCViewModel @Inject constructor(
                         _billDate.value = creditCard.billDate.toString()
                         _dueDate.value = creditCard.dueDate.toString()
                         _limit.value = creditCard.limit.toString()
+                        _bankName.value = creditCard.bankName?:""
                         _cardType.value = creditCard.cardType
                     }
                 }
@@ -118,6 +122,9 @@ class AddEditCCViewModel @Inject constructor(
                     _limit.value = event.value
                 }
             }
+            is AddEditCCEvent.EnteredBankName -> {
+                _bankName.value = event.value
+            }
             is AddEditCCEvent.UpsertCreditCard -> {
                 viewModelScope.launch {
                     try {
@@ -130,6 +137,7 @@ class AddEditCCViewModel @Inject constructor(
                                 dueDate = dueDate.value.toIntOrNull()?:0,
                                 cardType = cardType.value,
                                 limit = limit.value.toIntOrNull()?:0,
+                                bankName = bankName.value,
                                 id = currentCCId.value
                             )
                         )
