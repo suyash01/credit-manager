@@ -5,14 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.suyash.creditmanager.BuildConfig
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
 import com.suyash.creditmanager.domain.util.DateFormat
+import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
@@ -33,6 +39,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _countries = mutableStateOf(listOf(Locale("", "IN")))
     val countries: State<List<Locale>> = _countries
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     var txnCategoryCount: Int = 0
 
@@ -84,6 +93,11 @@ class SettingsViewModel @Inject constructor(
                     }
                 }
             }
+            is SettingsEvent.ShowSnackbar -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiEvent.ShowSnackbar(event.message))
+                }
+            }
         }
     }
 
@@ -92,5 +106,15 @@ class SettingsViewModel @Inject constructor(
         getTxnCategoryCountJob = txnCategoryUseCase.getTxnCategories().onEach {
             txnCategoryCount = it.size
         }.launchIn(viewModelScope)
+    }
+
+    fun getFilename(): String {
+        val date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+        return "${BuildConfig.APPLICATION_ID}_$date.json"
+    }
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String): UiEvent()
+        data object NavigateUp: UiEvent()
     }
 }

@@ -11,5 +11,5 @@ data class TxnCategory(
     val type: TransactionType,
     val name: String,
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0
+    var id: Int = 0
 )

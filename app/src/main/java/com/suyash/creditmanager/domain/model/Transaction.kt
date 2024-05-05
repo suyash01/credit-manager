@@ -19,7 +19,5 @@ data class Transaction(
     val date: LocalDate,
     val category: String?,
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0
+    var id: Int = 0
 )
-
-class InvalidTransactionException(message: String): Exception(message)

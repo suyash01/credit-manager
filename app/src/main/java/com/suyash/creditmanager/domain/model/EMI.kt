@@ -18,7 +18,7 @@ data class EMI(
     val date: LocalDate,
     val taxRate: Float?,
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0
+    var id: Int = 0
 )
 
 class InvalidEMIException(message: String): Exception(message)
