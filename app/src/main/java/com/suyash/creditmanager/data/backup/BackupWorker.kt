@@ -1,14 +1,15 @@
 package com.suyash.creditmanager.data.backup
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
-import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -42,13 +43,10 @@ class BackupWorker @AssistedInject constructor(
     private val txnCategoryUseCase: TxnCategoryUseCase
 ) : CoroutineWorker(appContext, workerParams) {
 
+    private val notificationManager =
+        applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-
         val fileUri = inputData.getString(LOCATION_URI_KEY)?.toUri()
             ?: return@withContext Result.failure()
 
@@ -58,11 +56,7 @@ class BackupWorker @AssistedInject constructor(
             when (type) {
                 "BACKUP" -> {
                     // Backup
-                    val foregroundInfo = ForegroundInfo(
-                        NOTIFICATION_ID,
-                        notification.setContentTitle("Backup in progress").build()
-                    )
-                    setForeground(foregroundInfo)
+                    setNotificationStart("Backup in progress")
                     val backupData = BackupData(
                         creditCards = creditCardUseCases.getCreditCards().first(),
                         emis = emiUseCases.getEMIs().first(),
@@ -73,12 +67,8 @@ class BackupWorker @AssistedInject constructor(
                 }
 
                 "RESTORE" -> {
-                    val foregroundInfo = ForegroundInfo(
-                        NOTIFICATION_ID,
-                        notification.setContentTitle("Restore in progress").build()
-                    )
-                    setForeground(foregroundInfo)
                     // Restore
+                    setNotificationStart("Restore in progress")
                     val restoredBackupData = readBackupDataFromJsonFile(fileUri)
                     restoreData(restoredBackupData)
                 }
@@ -87,8 +77,35 @@ class BackupWorker @AssistedInject constructor(
         } catch (e: Exception) {
             Result.failure()
         } finally {
-            notificationManager.cancel(NOTIFICATION_ID)
+            setNotificationEnd(
+                "${type.lowercase().replaceFirstChar { it.uppercaseChar() }} Completed"
+            )
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setNotificationStart(msg: String) {
+        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(msg)
+            .setAutoCancel(false)
+            .setOngoing(true)
+            .build()
+
+        notificationManager.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun setNotificationEnd(msg: String) {
+        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(msg)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .build()
+
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     data class BackupData(
@@ -153,7 +170,7 @@ class BackupWorker @AssistedInject constructor(
 
     companion object {
         private const val CHANNEL_ID = "BackupChannel"
-        private const val NOTIFICATION_ID = 123
+        private const val NOTIFICATION_ID = 1
         private const val TAG_AUTO = "BackupWorker"
         private const val TAG_MANUAL = "$TAG_AUTO:manual"
 
