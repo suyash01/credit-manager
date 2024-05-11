@@ -16,6 +16,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.suyash.creditmanager.R
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.EMI
@@ -75,6 +76,7 @@ class BackupWorker @AssistedInject constructor(
             }
             Result.success()
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure()
         } finally {
             setNotificationEnd(
@@ -109,9 +111,13 @@ class BackupWorker @AssistedInject constructor(
     }
 
     data class BackupData(
+        @SerializedName("creditCards")
         val creditCards: List<CreditCard>,
+        @SerializedName("emis")
         val emis: List<EMI>,
+        @SerializedName("transactions")
         val transactions: List<Transaction>,
+        @SerializedName("txnCategories")
         val txnCategories: List<TxnCategory>
     )
 
