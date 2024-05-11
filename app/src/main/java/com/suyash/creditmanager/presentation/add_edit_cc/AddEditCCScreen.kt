@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -29,6 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,16 +49,18 @@ fun AddEditCCScreen(
     navController: NavController,
     viewModel: AddEditCCViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is AddEditCCViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
+
                 is AddEditCCViewModel.UiEvent.NavigateUp -> {
                     navController.navigateUp()
                 }
@@ -70,7 +78,7 @@ fun AddEditCCScreen(
                     Text(text = if (viewModel.currentCCId.value == 0) "Add Credit Card" else "Edit Credit Card")
                 },
                 navigationIcon = {
-                    IconButton(onClick = {viewModel.onEvent(AddEditCCEvent.BackPressed)}) {
+                    IconButton(onClick = { viewModel.onEvent(AddEditCCEvent.BackPressed) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Go Back"
@@ -92,18 +100,10 @@ fun AddEditCCScreen(
                 .fillMaxWidth()
                 .padding(contentPadding)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             var ccTypeDropdownExpanded by remember { mutableStateOf(false) }
 
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = viewModel.cardName.value,
-                onValueChange = { newText ->
-                    viewModel.onEvent(AddEditCCEvent.EnteredCardName(newText))
-                },
-                label = { Text("Card Name") }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             ExposedDropdownMenuBox(
                 modifier = Modifier.fillMaxWidth(),
                 expanded = ccTypeDropdownExpanded,
@@ -145,6 +145,18 @@ fun AddEditCCScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
+                value = viewModel.cardName.value,
+                singleLine = true,
+                onValueChange = { newText ->
+                    viewModel.onEvent(AddEditCCEvent.EnteredCardName(newText))
+                },
+                label = { Text("Card Name") },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 value = viewModel.last4Digits.value,
                 onValueChange = { newText ->
@@ -157,8 +169,12 @@ fun AddEditCCScreen(
                         Text("XXXX-XXXX-XXXX-")
                     }
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Card Number") }
+                label = { Text("Card Number") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -168,8 +184,12 @@ fun AddEditCCScreen(
                     viewModel.onEvent(AddEditCCEvent.EnteredExpiry(newText))
                 },
                 visualTransformation = CMDateMask(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Expiry Date") }
+                label = { Text("Expiry Date") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -178,8 +198,12 @@ fun AddEditCCScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Due Date") }
+                label = { Text("Due Date") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -188,8 +212,12 @@ fun AddEditCCScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Bill Date") }
+                label = { Text("Bill Date") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -198,17 +226,24 @@ fun AddEditCCScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Limit") }
+                label = { Text("Limit") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.bankName.value,
+                singleLine = true,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredBankName(newText))
                 },
-                label = { Text("Bank Name") }
+                label = { Text("Bank Name") },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
             )
         }
     }

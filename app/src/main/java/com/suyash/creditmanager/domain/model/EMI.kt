@@ -29,5 +29,3 @@ data class EMI(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 )
-
-class InvalidEMIException(message: String): Exception(message)

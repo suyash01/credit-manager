@@ -15,8 +15,9 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.suyash.creditmanager.R
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.EMI
@@ -26,6 +27,7 @@ import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
 import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.util.LocalDateJSONConverter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.time.LocalDate
 
 @HiltWorker
 class BackupWorker @AssistedInject constructor(
@@ -46,6 +49,11 @@ class BackupWorker @AssistedInject constructor(
 
     private val notificationManager =
         applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+    private val gson = GsonBuilder().registerTypeAdapter(
+        object : TypeToken<LocalDate>() {}.type,
+        LocalDateJSONConverter()
+    ).create()
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val fileUri = inputData.getString(LOCATION_URI_KEY)?.toUri()
@@ -123,7 +131,6 @@ class BackupWorker @AssistedInject constructor(
 
     private fun writeBackupDataToJsonFile(uri: Uri, backupData: BackupData) {
         applicationContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
-            val gson = Gson()
             val jsonString = gson.toJson(backupData)
             val writer = OutputStreamWriter(outputStream)
             writer.write(jsonString)
@@ -135,7 +142,6 @@ class BackupWorker @AssistedInject constructor(
         try {
             applicationContext.contentResolver.openInputStream(uri)?.use { inputStream ->
                 val reader = InputStreamReader(inputStream)
-                val gson = Gson()
                 return gson.fromJson(reader, BackupData::class.java)
             }
             return BackupData(
