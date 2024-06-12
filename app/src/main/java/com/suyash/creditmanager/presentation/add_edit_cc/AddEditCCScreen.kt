@@ -40,8 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.presentation.util.CMDateMask
+import com.suyash.creditmanager.presentation.commons.CMDateMask
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Currency
+import java.util.Locale
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -225,6 +227,16 @@ fun AddEditCCScreen(
                 value = viewModel.limit.value,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
+                },
+                prefix = {
+                    Text(
+                        text = Currency.getInstance(
+                            Locale(
+                                "",
+                                viewModel.countryCode.value
+                            )
+                        ).symbol
+                    )
                 },
                 label = { Text("Limit") },
                 keyboardOptions = KeyboardOptions.Default.copy(

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.util.TransactionType
-import com.suyash.creditmanager.presentation.util.CMUtils
+import com.suyash.creditmanager.presentation.commons.CMUtils
 import com.suyash.creditmanager.ui.theme.CreditForeground
 import com.suyash.creditmanager.ui.theme.DebitForeground
 
@@ -29,10 +29,12 @@ fun TransactionItem(
 ) {
     Column(
         modifier = modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
         ) {
             Column(
                 modifier = Modifier

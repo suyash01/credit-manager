@@ -18,6 +18,7 @@ class GetEMIs(private val repository: EMIRepository) {
                         is EMIOrder.Rate -> emis.sortedBy { it.rate }
                         is EMIOrder.Months -> emis.sortedBy { it.months }
                         is EMIOrder.Date -> emis.sortedBy { it.date }
+                        is EMIOrder.EMIsPaid -> emis.sortedBy { it.emisPaid() }
                     }
                 }
                 is OrderType.Descending -> {
@@ -27,6 +28,7 @@ class GetEMIs(private val repository: EMIRepository) {
                         is EMIOrder.Rate -> emis.sortedByDescending { it.rate }
                         is EMIOrder.Months -> emis.sortedByDescending { it.months }
                         is EMIOrder.Date -> emis.sortedByDescending { it.date }
+                        is EMIOrder.EMIsPaid -> emis.sortedByDescending { it.emisPaid() }
                     }
                 }
             }

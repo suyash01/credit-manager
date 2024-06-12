@@ -6,4 +6,5 @@ sealed class EMIOrder(val orderType: OrderType) {
     class Rate(orderType: OrderType): EMIOrder(orderType)
     class Months(orderType: OrderType): EMIOrder(orderType)
     class Date(orderType: OrderType): EMIOrder(orderType)
+    class EMIsPaid(orderType: OrderType): EMIOrder(orderType)
 }

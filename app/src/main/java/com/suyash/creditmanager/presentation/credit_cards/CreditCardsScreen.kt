@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,7 +39,8 @@ import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.presentation.credit_cards.component.CreditCardItem
-import com.suyash.creditmanager.presentation.util.Screen
+import com.suyash.creditmanager.presentation.commons.Screen
+import com.suyash.creditmanager.presentation.commons.components.ConfirmationDialog
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -61,7 +60,7 @@ fun CreditCardsScreen(
         mutableStateOf(false)
     }
 
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Credit Cards") },
@@ -82,9 +81,8 @@ fun CreditCardsScreen(
                 Icon(Icons.Filled.Add, "Add Credit Card")
             }
         }
-    ) {
-        contentPadding ->
-        LazyColumn (
+    ) { contentPadding ->
+        LazyColumn(
             modifier = Modifier.padding(contentPadding)
         ) {
             items(viewModel.state.value.creditCards) { creditCard ->
@@ -104,46 +102,24 @@ fun CreditCardsScreen(
                 )
             }
         }
-        if(openDeleteConfirmationDialog) {
-            AlertDialog(
-                icon = {
-                    Icon(Icons.Filled.Delete, "Delete CC")
-                },
-                title = {
-                    Text(text = "Delete Credit Card?")
-                },
-                text = {
-                    Text(text = "Do you want to delete ${viewModel.state.value.selectedCreditCard?.cardName}")
-                },
-                onDismissRequest = {
+        if (openDeleteConfirmationDialog) {
+            ConfirmationDialog(
+                icon = Icons.Filled.Delete,
+                title = "Delete Credit Card?",
+                description = "Do you want to delete ${viewModel.state.value.selectedCreditCard?.cardName}",
+                onDismissRequest = { openDeleteConfirmationDialog = false },
+                onConfirmButton = {
                     openDeleteConfirmationDialog = false
+                    viewModel.onEvent(
+                        CreditCardsEvent.DeleteCreditCard(
+                            viewModel.state.value.selectedCreditCard
+                        )
+                    )
                 },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            openDeleteConfirmationDialog = false
-                            viewModel.onEvent(
-                                CreditCardsEvent.DeleteCreditCard(
-                                    viewModel.state.value.selectedCreditCard
-                                )
-                            )
-                        }
-                    ) {
-                        Text("Confirm")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDeleteConfirmationDialog = false
-                        }
-                    ) {
-                        Text("Dismiss")
-                    }
-                }
+                onDismissButton = { openDeleteConfirmationDialog = false }
             )
         }
-        if(isItemBottomSheetOpen) {
+        if (isItemBottomSheetOpen) {
             ModalBottomSheet(
                 sheetState = bottomSheetState,
                 onDismissRequest = { isItemBottomSheetOpen = false }
@@ -181,7 +157,7 @@ fun CreditCardsScreen(
                 }
             }
         }
-        if(isSortBottomSheetOpen) {
+        if (isSortBottomSheetOpen) {
             ModalBottomSheet(
                 sheetState = bottomSheetState,
                 onDismissRequest = { isSortBottomSheetOpen = false }
@@ -195,11 +171,11 @@ fun CreditCardsScreen(
                                 .clickable {
                                     isSortBottomSheetOpen = false
                                     if (viewModel.state.value.creditCardsOrder::class.simpleName == it.value) {
-                                        if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
+                                        if (viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
                                             CreditCardOrder.sorting[it.value]?.let { sort ->
                                                 viewModel.onEvent(CreditCardsEvent.Order(sort.second))
                                             }
-                                        } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
+                                        } else if (viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
                                             CreditCardOrder.sorting[it.value]?.let { sort ->
                                                 viewModel.onEvent(CreditCardsEvent.Order(sort.first))
                                             }
@@ -214,9 +190,9 @@ fun CreditCardsScreen(
                                 .padding(16.dp)
                         ) {
                             if (viewModel.state.value.creditCardsOrder::class.simpleName == it.value) {
-                                if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
+                                if (viewModel.state.value.creditCardsOrder.orderType == OrderType.Ascending) {
                                     Icon(Icons.Filled.ArrowUpward, "Ascending")
-                                } else if(viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
+                                } else if (viewModel.state.value.creditCardsOrder.orderType == OrderType.Descending) {
                                     Icon(Icons.Filled.ArrowDownward, "Descending")
                                 }
                             }

@@ -15,10 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.presentation.util.CMUtils
+import com.suyash.creditmanager.presentation.commons.CMUtils
 
 @Composable
 fun CreditCardItem(
@@ -81,4 +82,24 @@ fun CreditCardItem(
             }
         }
     }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+fun CreditCardItemPreview() {
+    CreditCardItem(
+        creditCard = CreditCard(
+            "Preview Credit Card",
+            "9005",
+            "0828",
+            19,
+            5,
+            CardType.VISA,
+            550000, bankName =
+            "ICICI"),
+        countryCode = "IN",
+        modifier = Modifier.fillMaxWidth()
+    )
 }

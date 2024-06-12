@@ -27,7 +27,7 @@ import com.suyash.creditmanager.presentation.emis.EMIsScreen
 import com.suyash.creditmanager.presentation.settings.SettingsScreen
 import com.suyash.creditmanager.presentation.transactions.TransactionsScreen
 import com.suyash.creditmanager.presentation.txn_categories.TxnCategoriesScreen
-import com.suyash.creditmanager.presentation.util.Screen
+import com.suyash.creditmanager.presentation.commons.Screen
 
 @Composable
 fun CreditManager(

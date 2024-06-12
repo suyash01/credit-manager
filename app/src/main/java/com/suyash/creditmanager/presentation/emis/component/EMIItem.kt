@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.util.DateFormat
-import com.suyash.creditmanager.presentation.util.CMUtils
+import com.suyash.creditmanager.presentation.commons.CMUtils
 import java.time.LocalDate
 
 @Composable
@@ -62,7 +62,7 @@ fun EMIItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = "${CMUtils.calculateEMIPaid(emi.date, emi.months)}/${emi.months}",
+                        text = "${emi.emisPaid()}/${emi.months}",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(

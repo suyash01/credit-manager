@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.util
+package com.suyash.creditmanager.presentation.commons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

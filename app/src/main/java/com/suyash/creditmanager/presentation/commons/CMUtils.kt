@@ -1,12 +1,10 @@
-package com.suyash.creditmanager.presentation.util
+package com.suyash.creditmanager.presentation.commons
 
 import com.suyash.creditmanager.domain.util.DateFormat
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Locale
-import kotlin.math.min
 
 class CMUtils {
     companion object {
@@ -25,11 +23,6 @@ class CMUtils {
 
         fun formatDate(dateTime: LocalDate, dateFormat: DateFormat): String {
             return dateTime.format(DateTimeFormatter.ofPattern(dateFormat.format))
-        }
-
-        fun calculateEMIPaid(emiDate: LocalDate, months: Int): Int {
-            val emiPaid: Int = ChronoUnit.MONTHS.between(emiDate, LocalDate.now()).toInt() + 1
-            return min(emiPaid, months)
         }
     }
 }
