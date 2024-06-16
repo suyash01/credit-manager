@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -69,7 +70,7 @@ class AddEditEMIViewModel @Inject constructor(
         savedStateHandle.get<Int>("emiId")?.let { emiId ->
             if(emiId != -1) {
                 viewModelScope.launch {
-                    emiUseCases.getEMI(emiId)?.also {
+                    emiUseCases.getEMI(emiId).first()?.let {
                         _currentEMIId.intValue = it.id
                         _name.value = it.name
                         _emiAmount.value = it.name

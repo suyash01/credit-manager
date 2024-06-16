@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.emi_details
+package com.suyash.creditmanager.presentation.emi_detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.presentation.commons.CMUtils
+import com.suyash.creditmanager.presentation.commons.Screen
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
@@ -62,9 +64,6 @@ fun EMIDetailScreen(
         },
         topBar = {
             TopAppBar(
-                title = {
-                    Text(text = "EMI Detail")
-                },
                 navigationIcon = {
                     IconButton(onClick = {
                         viewModel.onEvent(EMIDetailEvent.BackPressed)
@@ -72,6 +71,22 @@ fun EMIDetailScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Go Back"
+                        )
+                    }
+                },
+                title = {
+                    Text(text = "EMI Detail")
+                },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate(
+                            Screen.AddEditEMIScreen.route +
+                                    "?emiId=${viewModel.emi?.id}"
+                        )
+                    }) {
+                        Icon(
+                            Icons.Outlined.Edit,
+                            contentDescription = "Edit EMI"
                         )
                     }
                 }
@@ -114,6 +129,12 @@ fun EMIDetailScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Interest: ${CMUtils.currencyMask(viewModel.totalAmount - (viewModel.emi?.amount?:0.0F), viewModel.countryCode)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             if((viewModel.emi?.taxRate?.toInt() ?: 0) != 0) {
                 Text(
                     text = "TToI: ${CMUtils.currencyMask(viewModel.schedule.sumOf { it.taxOnInterest }.toFloat(), viewModel.countryCode)}",
@@ -131,7 +152,9 @@ fun EMIDetailScreen(
             LazyColumn {
                 items(viewModel.schedule) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = it.paymentNumber.toString())

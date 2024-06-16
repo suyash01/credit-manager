@@ -19,6 +19,9 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions")
     fun getTransactions(): Flow<List<Transaction>>
 
+    @Query("SELECT * FROM transactions WHERE card = :id")
+    fun getTransactionsByCC(id: Int): Flow<List<Transaction>>
+
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransaction(id: Int): Transaction?
 }

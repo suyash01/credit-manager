@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CreditCardRepository {
 
-    suspend fun upsertCreditCard(creditCard: CreditCard)
+    suspend fun upsertCreditCard(creditCard: CreditCard): Long
 
     suspend fun deleteCreditCard(creditCard: CreditCard)
 

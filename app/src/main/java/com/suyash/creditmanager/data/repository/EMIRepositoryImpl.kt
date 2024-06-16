@@ -18,7 +18,11 @@ class EMIRepositoryImpl(private val dao: EMIDao): EMIRepository {
         return dao.getEMIs()
     }
 
-    override suspend fun getEMI(id: Int): EMI? {
+    override fun getEMIsByCC(id: Int): Flow<List<EMI>> {
+        return dao.getEMIsByCC(id)
+    }
+
+    override fun getEMI(id: Int): Flow<EMI?> {
         return dao.getEMI(id)
     }
 }

@@ -1,6 +1,5 @@
 package com.suyash.creditmanager.data.backup
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
@@ -16,13 +15,9 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.google.gson.GsonBuilder
-import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.suyash.creditmanager.R
-import com.suyash.creditmanager.domain.model.CreditCard
-import com.suyash.creditmanager.domain.model.EMI
-import com.suyash.creditmanager.domain.model.Transaction
-import com.suyash.creditmanager.domain.model.TxnCategory
+import com.suyash.creditmanager.domain.model.backup.DataBackup
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
@@ -65,19 +60,14 @@ class BackupWorker @AssistedInject constructor(
             when (type) {
                 "BACKUP" -> {
                     // Backup
-                    setNotificationStart("Backup in progress")
-                    val backupData = BackupData(
-                        creditCards = creditCardUseCases.getCreditCards().first(),
-                        emis = emiUseCases.getEMIs().first(),
-                        transactions = transactionUseCase.getTransactions().first(),
-                        txnCategories = txnCategoryUseCase.getTxnCategories().first()
-                    )
-                    writeBackupDataToJsonFile(fileUri, backupData)
+                    setNotification("Backup in progress", true)
+                    val dataBackup = createDataBackup()
+                    writeBackupDataToJsonFile(fileUri, dataBackup)
                 }
 
                 "RESTORE" -> {
                     // Restore
-                    setNotificationStart("Restore in progress")
+                    setNotification("Restore in progress", true)
                     val restoredBackupData = readBackupDataFromJsonFile(fileUri)
                     restoreData(restoredBackupData)
                 }
@@ -87,97 +77,79 @@ class BackupWorker @AssistedInject constructor(
             e.printStackTrace()
             Result.failure()
         } finally {
-            setNotificationEnd(
-                "${type.lowercase().replaceFirstChar { it.uppercaseChar() }} Completed"
+            setNotification(
+                "${type.lowercase().replaceFirstChar { it.uppercaseChar() }} Completed", false
             )
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun setNotificationStart(msg: String) {
+    private fun setNotification(msg: String, start: Boolean) {
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(msg)
-            .setAutoCancel(false)
-            .setOngoing(true)
+            .setAutoCancel(!start)
+            .setOngoing(start)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun setNotificationEnd(msg: String) {
-        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(msg)
-            .setAutoCancel(true)
-            .setOngoing(false)
-            .build()
+    private suspend fun createDataBackup(): DataBackup {
+        val creditCards = creditCardUseCases.getCreditCards().first()
+        val emis = emiUseCases.getEMIs().first()
+        val transactions = transactionUseCase.getTransactions().first()
+        val txnCategories = txnCategoryUseCase.getTxnCategories().first()
 
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        val creditCardBackups = creditCards.map { creditCard ->
+            val creditCardBackup = creditCard.toCreditCardBackup()
+            creditCardBackup.transactions = transactions.filter { it.card == creditCard.id }.map { it.toTransactionBackup() }
+            creditCardBackup.emis = emis.filter { it.card == creditCard.id }.map { it.toEmiBackup() }
+            creditCardBackup
+        }
+        val emiBackups = emis.filter { it.card == null }.map { it.toEmiBackup() }
+        val txnCategoriesBackups = txnCategories.map { it.toTxnCategoryBackup() }
+        return DataBackup(creditCardBackups, emiBackups, txnCategoriesBackups)
     }
 
-    data class BackupData(
-        @SerializedName("creditCards")
-        val creditCards: List<CreditCard>,
-        @SerializedName("emis")
-        val emis: List<EMI>,
-        @SerializedName("transactions")
-        val transactions: List<Transaction>,
-        @SerializedName("txnCategories")
-        val txnCategories: List<TxnCategory>
-    )
-
-    private fun writeBackupDataToJsonFile(uri: Uri, backupData: BackupData) {
+    private fun writeBackupDataToJsonFile(uri: Uri, dataBackup: DataBackup) {
         applicationContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
-            val jsonString = gson.toJson(backupData)
+            val jsonString = gson.toJson(dataBackup)
             val writer = OutputStreamWriter(outputStream)
             writer.write(jsonString)
             writer.flush()
         }
     }
 
-    private fun readBackupDataFromJsonFile(uri: Uri): BackupData {
+    private fun readBackupDataFromJsonFile(uri: Uri): DataBackup {
         try {
             applicationContext.contentResolver.openInputStream(uri)?.use { inputStream ->
                 val reader = InputStreamReader(inputStream)
-                return gson.fromJson(reader, BackupData::class.java)
+                return gson.fromJson(reader, DataBackup::class.java)
             }
-            return BackupData(
+            return DataBackup(
                 creditCards = emptyList(),
                 emis = emptyList(),
-                transactions = emptyList(),
                 txnCategories = emptyList()
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            return BackupData(
+            return DataBackup(
                 creditCards = emptyList(),
                 emis = emptyList(),
-                transactions = emptyList(),
                 txnCategories = emptyList()
             )
         }
     }
 
-    private suspend fun restoreData(backupData: BackupData) {
-        backupData.creditCards.forEach {
-            it.id = 0
-            creditCardUseCases.upsertCreditCard(it)
+    private suspend fun restoreData(dataBackup: DataBackup) {
+        dataBackup.creditCards.forEach { cc ->
+            val ccId: Int = creditCardUseCases.upsertCreditCard(cc.toCreditCard()).toInt()
+            cc.emis.forEach { emi -> emiUseCases.upsertEMI(emi.toEmi(ccId)) }
+            cc.transactions.forEach{ txn -> transactionUseCase.upsertTransaction(txn.toTransaction(ccId)) }
         }
-        backupData.emis.forEach {
-            it.id = 0
-            emiUseCases.upsertEMI(it)
-        }
-        backupData.transactions.forEach {
-            it.id = 0
-            transactionUseCase.upsertTransaction(it)
-        }
-        backupData.txnCategories.forEach {
-            it.id = 0
-            txnCategoryUseCase.upsertTxnCategory(it)
-        }
+        dataBackup.emis.forEach { emiUseCases.upsertEMI(it.toEmi(null)) }
+        dataBackup.txnCategories.forEach { txnCategoryUseCase.upsertTxnCategory(it.toTxnCategory()) }
     }
 
     companion object {

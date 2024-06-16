@@ -6,12 +6,12 @@ import com.suyash.creditmanager.domain.repository.CreditCardRepository
 import kotlinx.coroutines.flow.Flow
 
 class CreditCardRepositoryImpl(private val dao: CreditCardDao): CreditCardRepository {
-    override suspend fun upsertCreditCard(creditCard: CreditCard) {
-        dao.upsertCreditCard(creditCard)
+    override suspend fun upsertCreditCard(creditCard: CreditCard): Long {
+        return dao.upsertCreditCard(creditCard)
     }
 
     override suspend fun deleteCreditCard(creditCard: CreditCard) {
-        dao.deleteCreditCard(creditCard)
+        return dao.deleteCreditCard(creditCard)
     }
 
     override fun getCreditCards(): Flow<List<CreditCard>> {

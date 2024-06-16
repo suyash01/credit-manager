@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface CreditCardDao {
 
     @Upsert
-    suspend fun upsertCreditCard(creditCard: CreditCard)
+    suspend fun upsertCreditCard(creditCard: CreditCard): Long
 
     @Delete
     suspend fun deleteCreditCard(creditCard: CreditCard)

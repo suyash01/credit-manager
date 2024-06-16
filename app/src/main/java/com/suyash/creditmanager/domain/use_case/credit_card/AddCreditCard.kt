@@ -8,10 +8,10 @@ import kotlin.jvm.Throws
 class AddCreditCard(private val repository: CreditCardRepository) {
 
     @Throws(InvalidCreditCardException::class)
-    suspend operator fun invoke(creditCard: CreditCard) {
+    suspend operator fun invoke(creditCard: CreditCard): Long {
         if(creditCard.cardName.isBlank() || creditCard.last4Digits.isBlank() || creditCard.expiryDate.isBlank()) {
             throw InvalidCreditCardException("Fields cannot be blank")
         }
-        repository.upsertCreditCard(creditCard)
+        return repository.upsertCreditCard(creditCard)
     }
 }

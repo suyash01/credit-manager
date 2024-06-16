@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.presentation.emi_details
+package com.suyash.creditmanager.presentation.emi_detail
 
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.SavedStateHandle
@@ -11,8 +11,11 @@ import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.util.DateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
@@ -33,26 +36,20 @@ class EMIDetailViewModel @Inject constructor(
     var totalAmount: Float = 0.0F
     var schedule: List<Payment> = emptyList()
 
+    private var getEMIDataJob: Job? = null
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        savedStateHandle.get<Int>("emiId")?.let {
-            viewModelScope.launch {
-                emiUseCases.getEMI(it)?.also { e ->
-                    emi = e
-                    generateAmortizationSchedule(e.amount.toDouble(), e.rate.toDouble(), e.months, e.taxRate?.toDouble()?:0.0)
-                }
-                emi?.card?.let {
-                    creditCardUseCases.getCreditCard(it)?.also { cc ->
-                        creditCard = cc
-                    }
-                }
-                dataStore.data.collect {
-                    countryCode = it.countryCode
-                    dateFormat = it.dateFormat
-                }
+        viewModelScope.launch {
+            dataStore.data.collect {
+                countryCode = it.countryCode
+                dateFormat = it.dateFormat
             }
+        }
+        savedStateHandle.get<Int>("emiId")?.let {
+            getEMIData(it)
         }
     }
 
@@ -64,6 +61,25 @@ class EMIDetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getEMIData(id: Int) {
+        getEMIDataJob?.cancel()
+        getEMIDataJob = emiUseCases.getEMI(id).onEach { emi ->
+            this.emi = emi
+            emi?.let {
+                generateAmortizationSchedule(
+                    emi.amount.toDouble(),
+                    emi.rate.toDouble(),
+                    emi.months,
+                    emi.taxRate?.toDouble()?:0.0)
+            }
+            emi?.card?.let {
+                creditCardUseCases.getCreditCard(it)?.also { cc ->
+                    creditCard = cc
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun generateAmortizationSchedule(loanAmount: Double, annualInterestRate: Double, loanTermInMonths: Int, taxRate: Double) {

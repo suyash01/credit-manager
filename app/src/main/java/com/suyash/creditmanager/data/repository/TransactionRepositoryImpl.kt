@@ -18,6 +18,10 @@ class TransactionRepositoryImpl(private val dao: TransactionDao): TransactionRep
         return dao.getTransactions()
     }
 
+    override fun getTransactionsByCC(id: Int): Flow<List<Transaction>> {
+        return dao.getTransactionsByCC(id)
+    }
+
     override suspend fun getTransaction(id: Int): Transaction? {
         return dao.getTransaction(id)
     }

@@ -10,5 +10,7 @@ interface TransactionRepository {
 
     fun getTransactions(): Flow<List<Transaction>>
 
+    fun getTransactionsByCC(id: Int): Flow<List<Transaction>>
+
     suspend fun getTransaction(id: Int): Transaction?
 }

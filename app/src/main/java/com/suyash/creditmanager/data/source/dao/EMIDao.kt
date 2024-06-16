@@ -18,6 +18,9 @@ interface EMIDao {
     @Query("SELECT * FROM emis")
     fun getEMIs(): Flow<List<EMI>>
 
+    @Query("SELECT * FROM emis WHERE card = :id")
+    fun getEMIsByCC(id: Int): Flow<List<EMI>>
+
     @Query("SELECT * FROM emis WHERE id = :id")
-    suspend fun getEMI(id: Int): EMI?
+    fun getEMI(id: Int): Flow<EMI?>
 }
