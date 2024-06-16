@@ -1,6 +1,8 @@
 package com.suyash.creditmanager.domain.model
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.suyash.creditmanager.domain.model.backup.EmiBackup
@@ -9,7 +11,16 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.min
 
 @Entity(
-    tableName = "emis"
+    tableName = "emis",
+    indices = [Index(value = ["card"])],
+    foreignKeys = [
+        ForeignKey(
+            entity = CreditCard::class,
+            parentColumns = ["id"],
+            childColumns = ["card"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 @TypeConverters(Converters::class)
 data class EMI(

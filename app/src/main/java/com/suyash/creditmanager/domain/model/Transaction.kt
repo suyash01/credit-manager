@@ -1,6 +1,7 @@
 package com.suyash.creditmanager.domain.model
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -10,7 +11,15 @@ import java.time.LocalDate
 
 @Entity(
     tableName = "transactions",
-    indices = [Index(value = ["date"])]
+    indices = [Index(value = ["date"]), Index(value = ["card"])],
+    foreignKeys = [
+        ForeignKey(
+            entity = CreditCard::class,
+            parentColumns = ["id"],
+            childColumns = ["card"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 @TypeConverters(Converters::class)
 data class Transaction(

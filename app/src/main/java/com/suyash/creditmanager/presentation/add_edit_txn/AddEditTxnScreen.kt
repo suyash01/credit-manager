@@ -116,6 +116,7 @@ fun AddEditTxnScreen(
         ) {
             var ccDropdownExpanded by remember { mutableStateOf(false) }
             var txnTypeDropdownExpanded by remember { mutableStateOf(false) }
+            var txnCategoryDropdownExpanded by remember { mutableStateOf(false) }
 
             ExposedDropdownMenuBox(
                 modifier = Modifier.fillMaxWidth(),
@@ -189,6 +190,45 @@ fun AddEditTxnScreen(
                             onClick = {
                                 viewModel.onEvent(AddEditTxnEvent.SelectedTxnType(it))
                                 txnTypeDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            ExposedDropdownMenuBox(
+                modifier = Modifier.fillMaxWidth(),
+                expanded = txnCategoryDropdownExpanded,
+                onExpandedChange = {
+                    txnCategoryDropdownExpanded = !txnCategoryDropdownExpanded
+                }) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    readOnly = true,
+                    value = viewModel.txnCategory.value,
+                    onValueChange = { },
+                    label = { Text("Transaction Category") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = txnCategoryDropdownExpanded
+                        )
+                    }
+                )
+                ExposedDropdownMenu(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = txnCategoryDropdownExpanded,
+                    onDismissRequest = {
+                        txnCategoryDropdownExpanded = false
+                    }
+                ) {
+                    viewModel.txnCategories.value.filter { it.type == viewModel.txnType.value }.forEach {
+                        DropdownMenuItem(
+                            text = { Text(text = it.name) },
+                            onClick = {
+                                viewModel.onEvent(AddEditTxnEvent.SelectedTxnCategory(it.name))
+                                txnCategoryDropdownExpanded = false
                             }
                         )
                     }

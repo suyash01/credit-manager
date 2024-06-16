@@ -36,6 +36,9 @@ class AddEditCCViewModel @Inject constructor(
     private val _expiry = mutableStateOf("")
     val expiry: State<String> = _expiry
 
+    private val _gracePeriod = mutableStateOf(false)
+    val gracePeriod: State<Boolean> = _gracePeriod
+
     private val _billDate = mutableStateOf("")
     val billDate: State<String> = _billDate
 
@@ -108,6 +111,10 @@ class AddEditCCViewModel @Inject constructor(
                 if (validateExpiry(event.value)) {
                     _expiry.value = event.value
                 }
+            }
+
+            is AddEditCCEvent.CheckedGracePeriod -> {
+                _gracePeriod.value = event.value
             }
 
             is AddEditCCEvent.EnteredDueDate -> {

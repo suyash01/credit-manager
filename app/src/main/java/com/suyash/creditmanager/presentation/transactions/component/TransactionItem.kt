@@ -34,7 +34,7 @@ fun TransactionItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(vertical = 8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -50,6 +50,10 @@ fun TransactionItem(
                         style = MaterialTheme.typography.bodyLarge,
                         color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )
+                    Text(
+                        text = transaction.category?:"",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -57,7 +61,7 @@ fun TransactionItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = creditCard?.cardName?:"Credit Card Name",
+                        text = creditCard?.cardName?:"Deleted Credit Card",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(

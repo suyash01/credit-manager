@@ -1,6 +1,8 @@
 package com.suyash.creditmanager.presentation.add_edit_cc
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -31,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -194,33 +198,51 @@ fun AddEditCCScreen(
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.dueDate.value,
-                onValueChange = { newText ->
-                    viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
-                },
-                label = { Text("Due Date") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
-            )
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = viewModel.gracePeriod.value,
+                    onCheckedChange = { viewModel.onEvent(AddEditCCEvent.CheckedGracePeriod(it)) }
+                )
+                Text(
+                    "Grace period instead of bill date"
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.billDate.value,
-                onValueChange = { newText ->
-                    viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
-                },
-                label = { Text("Bill Date") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
-            )
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = viewModel.dueDate.value,
+                    onValueChange = { newText ->
+                        viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
+                    },
+                    label = { Text("Due Date") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = viewModel.billDate.value,
+                    onValueChange = { newText ->
+                        viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
+                    },
+                    label = { Text(if(viewModel.gracePeriod.value) "Grace Period" else "Bill Date") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),

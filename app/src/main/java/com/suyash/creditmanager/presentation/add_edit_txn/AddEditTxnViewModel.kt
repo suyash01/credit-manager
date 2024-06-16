@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
+import com.suyash.creditmanager.domain.model.TxnCategory
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCase
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.domain.util.TransactionType
@@ -28,12 +30,17 @@ import javax.inject.Inject
 class AddEditTxnViewModel @Inject constructor(
     private val transactionUseCase: TransactionUseCase,
     private val creditCardUseCases: CreditCardUseCases,
+    private val txnCategoryUseCase: TxnCategoryUseCase,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private var getCreditCardsJob: Job? = null
+    private var getTxnCategoriesJob: Job? = null
 
     private val _creditCards = mutableStateOf(emptyList<CreditCard>())
     val creditCards: State<List<CreditCard>> = _creditCards
+
+    private val _txnCategories = mutableStateOf(emptyList<TxnCategory>())
+    val txnCategories: State<List<TxnCategory>> = _txnCategories
 
     private val _dateFormatter = mutableStateOf(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
     val dateFormatter: State<DateTimeFormatter> = _dateFormatter
@@ -43,6 +50,9 @@ class AddEditTxnViewModel @Inject constructor(
 
     private val _txnType = mutableStateOf(TransactionType.DEBIT)
     val txnType: State<TransactionType> = _txnType
+
+    private val _txnCategory = mutableStateOf("")
+    val txnCategory: State<String> = _txnCategory
 
     private val _txnDate = mutableStateOf(LocalDate.now())
     val txnDate: State<LocalDate> = _txnDate
@@ -57,13 +67,14 @@ class AddEditTxnViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        getCreditCards(CreditCardOrder.Name(OrderType.Ascending))
+        getCreditCardsAndCategories(CreditCardOrder.Name(OrderType.Ascending))
         savedStateHandle.get<Int>("txnId")?.let { txnId ->
             if(txnId != -1) {
                 viewModelScope.launch {
                     transactionUseCase.getTransaction(txnId)?.also { transaction ->
                         _currentTxnId.intValue = transaction.id
                         _txnType.value = transaction.type
+                        _txnCategory.value = transaction.category?:""
                         _txnAmount.value = transaction.amount.toString()
                         _selectedCreditCard.intValue = transaction.card
                         _txnDate.value = transaction.date
@@ -95,16 +106,20 @@ class AddEditTxnViewModel @Inject constructor(
             }
             is AddEditTxnEvent.SelectedTxnType -> {
                 _txnType.value = event.value
+                _txnCategory.value = ""
+            }
+            is AddEditTxnEvent.SelectedTxnCategory -> {
+                _txnCategory.value = event.value
             }
             is AddEditTxnEvent.UpsertTransaction -> {
                 viewModelScope.launch {
                     transactionUseCase.upsertTransaction(
                         Transaction(
                             type = txnType.value,
+                            category = txnCategory.value,
                             amount = txnAmount.value.toFloatOrNull()?:0.0F,
                             card = selectedCreditCard.value,
                             date = txnDate.value,
-                            category = null,
                             id = currentTxnId.value
                         )
                     )
@@ -119,10 +134,14 @@ class AddEditTxnViewModel @Inject constructor(
         }
     }
 
-    private fun getCreditCards(creditCardsOrder: CreditCardOrder) {
+    private fun getCreditCardsAndCategories(creditCardsOrder: CreditCardOrder) {
         getCreditCardsJob?.cancel()
         getCreditCardsJob = creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
             _creditCards.value = creditCards
+        }.launchIn(viewModelScope)
+        getTxnCategoriesJob?.cancel()
+        getTxnCategoriesJob = txnCategoryUseCase.getTxnCategories().onEach { txnCategories ->
+            _txnCategories.value = txnCategories
         }.launchIn(viewModelScope)
     }
 

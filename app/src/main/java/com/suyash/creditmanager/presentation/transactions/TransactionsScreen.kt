@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,17 +75,15 @@ fun TransactionsScreen(
             val groupedTxn = viewModel.state.value.transactions.groupBy { it.date }
             groupedTxn.forEach { (date, transactions) ->
                 stickyHeader {
-                    Box(modifier = Modifier.padding(bottom = 16.dp)) {
-                        Text(
-                            text = date.format(viewModel.state.value.dateFormat.formatter),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .padding(horizontal = 16.dp)
-                        )
-                    }
+                    Text(
+                        text = date.format(viewModel.state.value.dateFormat.formatter),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(horizontal = 16.dp)
+                    )
                 }
                 items(transactions) { transaction ->
                     TransactionItem(
