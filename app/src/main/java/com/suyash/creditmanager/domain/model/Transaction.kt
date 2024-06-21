@@ -1,6 +1,5 @@
 package com.suyash.creditmanager.domain.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -24,7 +23,6 @@ import java.time.LocalDate
 )
 @TypeConverters(Converters::class)
 data class Transaction(
-    @ColumnInfo(defaultValue = "Transaction")
     val name: String,
     val type: TransactionType,
     val amount: Float,

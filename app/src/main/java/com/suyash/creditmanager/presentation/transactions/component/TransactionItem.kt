@@ -62,7 +62,7 @@ fun TransactionItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "${creditCard?.cardName?:"Deleted Credit Card"}(${creditCard?.last4Digits?:"XXXX"})",
+                        text = "${creditCard?.cardName?:"Deleted Credit Card"} (${creditCard?.last4Digits?:"XXXX"})",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(

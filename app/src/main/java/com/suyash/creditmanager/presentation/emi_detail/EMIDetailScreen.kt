@@ -149,12 +149,12 @@ fun EMIDetailScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
                 items(viewModel.schedule) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
+                            .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = it.paymentNumber.toString())
