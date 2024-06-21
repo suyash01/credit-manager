@@ -23,4 +23,7 @@ interface EMIDao {
 
     @Query("SELECT * FROM emis WHERE id = :id")
     fun getEMI(id: Int): Flow<EMI?>
+
+    @Query("SELECT COUNT(*) FROM emis WHERE card = :id")
+    fun getEMICountByCC(id: Int): Int
 }

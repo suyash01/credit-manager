@@ -74,6 +74,7 @@ class EMIDetailViewModel @Inject constructor(
                     emi.months,
                     emi.taxRate?.toDouble()?:0.0)
             }
+            if (emi?.card == null) creditCard = null
             emi?.card?.let {
                 creditCardUseCases.getCreditCard(it)?.also { cc ->
                     creditCard = cc

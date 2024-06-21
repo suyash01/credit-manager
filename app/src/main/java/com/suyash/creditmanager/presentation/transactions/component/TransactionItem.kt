@@ -46,13 +46,14 @@ fun TransactionItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = CMUtils.currencyMask(transaction.amount, countryCode),
+                        text = transaction.name,
                         style = MaterialTheme.typography.bodyLarge,
                         color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )
                     Text(
-                        text = transaction.category?:"",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = CMUtils.currencyMask(transaction.amount, countryCode),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -61,11 +62,11 @@ fun TransactionItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = creditCard?.cardName?:"Deleted Credit Card",
+                        text = "${creditCard?.cardName?:"Deleted Credit Card"}(${creditCard?.last4Digits?:"XXXX"})",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = creditCard?.last4Digits?:"XXXX",
+                        text = transaction.category?:"",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

@@ -5,6 +5,7 @@ import com.suyash.creditmanager.domain.util.TransactionType
 import java.time.LocalDate
 
 sealed class AddEditTxnEvent {
+    data class EnteredName(val value: String): AddEditTxnEvent()
     data class SelectedCard(val value: CreditCard): AddEditTxnEvent()
     data class SelectedTxnType(val value: TransactionType): AddEditTxnEvent()
     data class SelectedTxnCategory(val value: String): AddEditTxnEvent()

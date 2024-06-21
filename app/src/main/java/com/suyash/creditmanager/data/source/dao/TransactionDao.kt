@@ -24,4 +24,7 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransaction(id: Int): Transaction?
+
+    @Query("SELECT COUNT(*) FROM transactions WHERE card = :id")
+    suspend fun getTxnCountByCC(id: Int): Int
 }

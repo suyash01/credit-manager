@@ -14,4 +14,6 @@ interface EMIRepository {
     fun getEMI(id: Int): Flow<EMI?>
 
     fun getEMIsByCC(id: Int): Flow<List<EMI>>
+
+    suspend fun getEMICountByCC(id: Int): Int
 }

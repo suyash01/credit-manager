@@ -110,7 +110,6 @@ fun TransactionsScreen(
         }
         if (openDeleteConfirmationDialog) {
             ConfirmationDialog(
-                icon = Icons.Filled.Delete,
                 title = "Delete Transaction?",
                 description = "Do you want to delete the transaction?",
                 onDismissRequest = { openDeleteConfirmationDialog = false },

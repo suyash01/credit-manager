@@ -6,6 +6,8 @@ import com.suyash.creditmanager.domain.util.TransactionType
 import java.time.LocalDate
 
 data class TransactionBackup(
+    @SerializedName("name")
+    val name: String,
     @SerializedName("type")
     val type: TransactionType,
     @SerializedName("amount")
@@ -17,6 +19,7 @@ data class TransactionBackup(
 ) {
     fun toTransaction(card: Int) =
         Transaction(
+            name = this.name,
             type = this.type,
             amount = this.amount,
             date = this.date,

@@ -28,6 +28,7 @@ import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCards
 import com.suyash.creditmanager.domain.use_case.emi.AddEMI
 import com.suyash.creditmanager.domain.use_case.emi.DeleteEMI
 import com.suyash.creditmanager.domain.use_case.emi.GetEMI
+import com.suyash.creditmanager.domain.use_case.emi.GetEMICountByCC
 import com.suyash.creditmanager.domain.use_case.emi.GetEMIs
 import com.suyash.creditmanager.domain.use_case.emi.GetEMIsByCC
 import com.suyash.creditmanager.domain.use_case.transaction.AddTransaction
@@ -35,6 +36,7 @@ import com.suyash.creditmanager.domain.use_case.transaction.DeleteTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransaction
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransactions
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransactionsByCC
+import com.suyash.creditmanager.domain.use_case.transaction.GetTxnCountByCC
 import com.suyash.creditmanager.domain.use_case.txn_category.AddTxnCategory
 import com.suyash.creditmanager.domain.use_case.txn_category.DeleteTxnCategory
 import com.suyash.creditmanager.domain.use_case.txn_category.GetTxnCategories
@@ -105,7 +107,8 @@ object AppModule {
             getTransaction = GetTransaction(repository),
             getTransactionsByCC = GetTransactionsByCC(repository),
             upsertTransaction = AddTransaction(repository),
-            deleteTransaction = DeleteTransaction(repository)
+            deleteTransaction = DeleteTransaction(repository),
+            getTxnCountByCC = GetTxnCountByCC(repository)
         )
     }
 
@@ -117,7 +120,8 @@ object AppModule {
             getEMI = GetEMI(repository),
             getEMIsByCC = GetEMIsByCC(repository),
             upsertEMI = AddEMI(repository),
-            deleteEMI = DeleteEMI(repository)
+            deleteEMI = DeleteEMI(repository),
+            getEMICountByCC = GetEMICountByCC(repository)
         )
     }
 

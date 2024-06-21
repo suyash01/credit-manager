@@ -118,7 +118,7 @@ fun EMIDetailScreen(
                 viewModel.creditCard?.let {
                     Text(
                         text = "${it.cardName} (${it.last4Digits})",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }

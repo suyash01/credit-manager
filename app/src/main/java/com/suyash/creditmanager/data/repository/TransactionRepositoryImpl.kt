@@ -25,4 +25,8 @@ class TransactionRepositoryImpl(private val dao: TransactionDao): TransactionRep
     override suspend fun getTransaction(id: Int): Transaction? {
         return dao.getTransaction(id)
     }
+
+    override suspend fun getTxnCountByCC(id: Int): Int {
+        return dao.getTxnCountByCC(id)
+    }
 }

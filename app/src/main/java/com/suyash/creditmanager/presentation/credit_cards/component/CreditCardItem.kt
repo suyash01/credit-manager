@@ -98,7 +98,7 @@ fun CreditCardItemPreview() {
             19,
             5,
             CardType.VISA,
-            550000, bankName =
+            550000,
             "ICICI"),
         countryCode = "IN",
         modifier = Modifier.fillMaxWidth()

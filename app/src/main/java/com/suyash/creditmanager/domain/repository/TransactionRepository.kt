@@ -13,4 +13,6 @@ interface TransactionRepository {
     fun getTransactionsByCC(id: Int): Flow<List<Transaction>>
 
     suspend fun getTransaction(id: Int): Transaction?
+
+    suspend fun getTxnCountByCC(id: Int): Int
 }

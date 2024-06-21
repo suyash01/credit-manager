@@ -104,9 +104,9 @@ fun CreditCardsScreen(
         }
         if (openDeleteConfirmationDialog) {
             ConfirmationDialog(
-                icon = Icons.Filled.Delete,
                 title = "Delete Credit Card?",
                 description = "Do you want to delete ${viewModel.state.value.selectedCreditCard?.cardName}",
+                warningMessage = "This action will delete associated transaction(s) and emi(s)",
                 onDismissRequest = { openDeleteConfirmationDialog = false },
                 onConfirmButton = {
                     openDeleteConfirmationDialog = false

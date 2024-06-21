@@ -118,6 +118,15 @@ fun AddEditTxnScreen(
             var txnTypeDropdownExpanded by remember { mutableStateOf(false) }
             var txnCategoryDropdownExpanded by remember { mutableStateOf(false) }
 
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.name.value,
+                onValueChange = { newText ->
+                    viewModel.onEvent(AddEditTxnEvent.EnteredName(newText))
+                },
+                label = { Text("Name") }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             ExposedDropdownMenuBox(
                 modifier = Modifier.fillMaxWidth(),
                 expanded = ccDropdownExpanded,

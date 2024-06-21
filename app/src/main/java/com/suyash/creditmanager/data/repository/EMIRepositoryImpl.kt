@@ -22,6 +22,10 @@ class EMIRepositoryImpl(private val dao: EMIDao): EMIRepository {
         return dao.getEMIsByCC(id)
     }
 
+    override suspend fun getEMICountByCC(id: Int): Int {
+        return dao.getEMICountByCC(id)
+    }
+
     override fun getEMI(id: Int): Flow<EMI?> {
         return dao.getEMI(id)
     }

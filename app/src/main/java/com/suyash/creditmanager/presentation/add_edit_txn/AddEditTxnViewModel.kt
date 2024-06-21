@@ -48,6 +48,9 @@ class AddEditTxnViewModel @Inject constructor(
     private val _selectedCreditCard = mutableIntStateOf(-1)
     private val selectedCreditCard: State<Int> = _selectedCreditCard
 
+    private val _name = mutableStateOf("")
+    val name: State<String> = _name
+
     private val _txnType = mutableStateOf(TransactionType.DEBIT)
     val txnType: State<TransactionType> = _txnType
 
@@ -72,6 +75,7 @@ class AddEditTxnViewModel @Inject constructor(
             if(txnId != -1) {
                 viewModelScope.launch {
                     transactionUseCase.getTransaction(txnId)?.also { transaction ->
+                        _name.value = transaction.name
                         _currentTxnId.intValue = transaction.id
                         _txnType.value = transaction.type
                         _txnCategory.value = transaction.category?:""
@@ -98,6 +102,9 @@ class AddEditTxnViewModel @Inject constructor(
                     _txnAmount.value = event.value
                 }
             }
+            is AddEditTxnEvent.EnteredName -> {
+                _name.value = event.value
+            }
             is AddEditTxnEvent.EnteredDate -> {
                 _txnDate.value = event.value
             }
@@ -115,6 +122,7 @@ class AddEditTxnViewModel @Inject constructor(
                 viewModelScope.launch {
                     transactionUseCase.upsertTransaction(
                         Transaction(
+                            name = name.value,
                             type = txnType.value,
                             category = txnCategory.value,
                             amount = txnAmount.value.toFloatOrNull()?:0.0F,

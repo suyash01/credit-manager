@@ -93,7 +93,6 @@ fun EMIsScreen(
         }
         if(openDeleteConfirmationDialog) {
             ConfirmationDialog(
-                icon = Icons.Filled.Delete,
                 title = "Delete EMI?",
                 description = "Do you want to delete ${viewModel.state.value.selectedEMI?.name}",
                 onDismissRequest = { openDeleteConfirmationDialog = false },
