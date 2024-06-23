@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.domain.model.TxnCategory
-import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.util.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TxnCategoriesViewModel @Inject constructor(
-    private val txnCategoryUseCase: TxnCategoryUseCase
+    private val txnCategoryUseCase: TxnCategoryUseCases
 ): ViewModel() {
 
     private val _txnCategories = mutableStateOf(emptyList<TxnCategory>())

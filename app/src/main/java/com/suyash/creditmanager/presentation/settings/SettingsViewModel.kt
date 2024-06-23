@@ -7,9 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.BuildConfig
 import com.suyash.creditmanager.data.settings.AppSettings
-import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.util.DateFormat
-import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val txnCategoryUseCase: TxnCategoryUseCase,
+    private val txnCategoryUseCase: TxnCategoryUseCases,
     private val dataStore: DataStore<AppSettings>
 ) : ViewModel() {
 

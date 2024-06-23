@@ -20,8 +20,8 @@ import com.suyash.creditmanager.R
 import com.suyash.creditmanager.domain.model.backup.DataBackup
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
-import com.suyash.creditmanager.domain.use_case.TransactionUseCase
-import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.TransactionUseCases
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.util.LocalDateJSONConverter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -38,8 +38,8 @@ class BackupWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val creditCardUseCases: CreditCardUseCases,
     private val emiUseCases: EMIUseCases,
-    private val transactionUseCase: TransactionUseCase,
-    private val txnCategoryUseCase: TxnCategoryUseCase
+    private val transactionUseCase: TransactionUseCases,
+    private val txnCategoryUseCase: TxnCategoryUseCases
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val notificationManager =

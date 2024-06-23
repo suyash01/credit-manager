@@ -18,7 +18,7 @@ class CreditCardRepositoryImpl(private val dao: CreditCardDao): CreditCardReposi
         return dao.getCreditCards()
     }
 
-    override suspend fun getCreditCard(id: Int): CreditCard? {
+    override fun getCreditCard(id: Int): Flow<CreditCard?> {
         return dao.getCreditCard(id)
     }
 }

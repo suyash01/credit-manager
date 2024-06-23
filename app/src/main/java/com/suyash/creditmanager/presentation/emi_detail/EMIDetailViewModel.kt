@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -76,7 +77,7 @@ class EMIDetailViewModel @Inject constructor(
             }
             if (emi?.card == null) creditCard = null
             emi?.card?.let {
-                creditCardUseCases.getCreditCard(it)?.also { cc ->
+                creditCardUseCases.getCreditCard(it).first()?.let { cc ->
                     creditCard = cc
                 }
             }

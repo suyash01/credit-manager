@@ -54,6 +54,13 @@ sealed class Screen(
         Icons.Outlined.Add
     )
 
+    data object CCDetailScreen: Screen(
+        "cc_detail",
+        "CC Detail",
+        Icons.Filled.Info,
+        Icons.Outlined.Info
+    )
+
     data object AddEditTxnScreen: Screen(
         "add_edit_txn_screen",
         "Add/Edit Transaction",

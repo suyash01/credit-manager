@@ -20,5 +20,5 @@ interface CreditCardDao {
     fun getCreditCards(): Flow<List<CreditCard>>
 
     @Query("SELECT * FROM credit_cards WHERE id = :id")
-    suspend fun getCreditCard(id: Int): CreditCard?
+    fun getCreditCard(id: Int): Flow<CreditCard?>
 }

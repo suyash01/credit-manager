@@ -7,7 +7,7 @@ import com.suyash.creditmanager.domain.use_case.transaction.GetTransactions
 import com.suyash.creditmanager.domain.use_case.transaction.GetTransactionsByCC
 import com.suyash.creditmanager.domain.use_case.transaction.GetTxnCountByCC
 
-data class TransactionUseCase (
+data class TransactionUseCases (
     val getTransactions: GetTransactions,
     val getTransaction: GetTransaction,
     val getTransactionsByCC: GetTransactionsByCC,

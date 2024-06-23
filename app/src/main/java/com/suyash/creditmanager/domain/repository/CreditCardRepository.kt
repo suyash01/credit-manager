@@ -11,5 +11,5 @@ interface CreditCardRepository {
 
     fun getCreditCards(): Flow<List<CreditCard>>
 
-    suspend fun getCreditCard(id: Int): CreditCard?
+    fun getCreditCard(id: Int): Flow<CreditCard?>
 }

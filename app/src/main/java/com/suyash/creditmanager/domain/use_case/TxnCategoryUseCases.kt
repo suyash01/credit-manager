@@ -5,7 +5,7 @@ import com.suyash.creditmanager.domain.use_case.txn_category.DeleteTxnCategory
 import com.suyash.creditmanager.domain.use_case.txn_category.GetTxnCategories
 import com.suyash.creditmanager.domain.use_case.txn_category.GetTxnCategory
 
-data class TxnCategoryUseCase(
+data class TxnCategoryUseCases(
     val getTxnCategories: GetTxnCategories,
     val getTxnCategory: GetTxnCategory,
     val upsertTxnCategory: AddTxnCategory,

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
-import com.suyash.creditmanager.domain.use_case.TransactionUseCase
+import com.suyash.creditmanager.domain.use_case.TransactionUseCases
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.domain.util.TransactionOrder
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
     private val creditCardUseCases: CreditCardUseCases,
-    private val transactionUseCase: TransactionUseCase,
+    private val transactionUseCase: TransactionUseCases,
     private val dataStore: DataStore<AppSettings>
 ): ViewModel() {
 

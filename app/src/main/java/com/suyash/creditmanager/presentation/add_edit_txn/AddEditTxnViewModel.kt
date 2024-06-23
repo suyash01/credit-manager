@@ -10,8 +10,8 @@ import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.model.TxnCategory
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
-import com.suyash.creditmanager.domain.use_case.TransactionUseCase
-import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.TransactionUseCases
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.domain.util.TransactionType
@@ -28,9 +28,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditTxnViewModel @Inject constructor(
-    private val transactionUseCase: TransactionUseCase,
+    private val transactionUseCase: TransactionUseCases,
     private val creditCardUseCases: CreditCardUseCases,
-    private val txnCategoryUseCase: TxnCategoryUseCase,
+    private val txnCategoryUseCase: TxnCategoryUseCases,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private var getCreditCardsJob: Job? = null

@@ -13,6 +13,8 @@ data class CreditCardBackup(
     var expiryDate: String,
     @SerializedName("billDate")
     var billDate: Int,
+    @SerializedName("gracePeriod")
+    var gracePeriod: Boolean,
     @SerializedName("dueDate")
     var dueDate: Int,
     @SerializedName("cardType")
@@ -36,5 +38,6 @@ data class CreditCardBackup(
             cardType = this.cardType,
             limit = this.limit,
             bankName = this.bankName,
+            gracePeriod = this.gracePeriod
         )
 }

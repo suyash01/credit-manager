@@ -11,9 +11,10 @@ data class CreditCard(
     var last4Digits: String,
     var expiryDate: String,
     var billDate: Int,
+    var gracePeriod: Boolean,
     var dueDate: Int,
     var cardType: CardType,
-    var limit: Int = 0,
+    var limit: Int,
     var bankName: String?,
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
@@ -24,11 +25,10 @@ data class CreditCard(
             last4Digits = this.last4Digits,
             expiryDate = this.expiryDate,
             billDate = this.billDate,
+            gracePeriod = this.gracePeriod,
             dueDate = this.dueDate,
             cardType = this.cardType,
             limit = this.limit,
             bankName = this.bankName
         )
 }
-
-class InvalidCreditCardException(message: String): Exception(message)

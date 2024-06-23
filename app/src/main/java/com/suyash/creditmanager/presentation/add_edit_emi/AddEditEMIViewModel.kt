@@ -188,6 +188,7 @@ class AddEditEMIViewModel @Inject constructor(
                         "XXXX",
                         "",
                         0,
+                        false,
                         0,
                         CardType.VISA,
                         0,

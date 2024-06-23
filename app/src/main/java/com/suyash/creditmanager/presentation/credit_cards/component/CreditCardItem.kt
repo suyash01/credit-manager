@@ -96,6 +96,7 @@ fun CreditCardItemPreview() {
             "9005",
             "0828",
             19,
+            false,
             5,
             CardType.VISA,
             550000,

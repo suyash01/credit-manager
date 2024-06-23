@@ -9,12 +9,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.model.CreditCard
-import com.suyash.creditmanager.domain.model.InvalidCreditCardException
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.util.CardType
+import com.suyash.creditmanager.presentation.commons.TextInputState
+import com.suyash.creditmanager.presentation.commons.validateCCExpiry
+import com.suyash.creditmanager.presentation.commons.validateInRange
+import com.suyash.creditmanager.presentation.commons.validateIsNumeric
+import com.suyash.creditmanager.presentation.commons.validateMinMaxLength
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,32 +32,32 @@ class AddEditCCViewModel @Inject constructor(
     private val _countryCode = mutableStateOf("")
     val countryCode: State<String> = _countryCode
 
-    private val _last4Digits = mutableStateOf("")
-    val last4Digits: State<String> = _last4Digits
+    private val _cardType = mutableStateOf(CardType.VISA)
+    val cardType: State<CardType> = _cardType
 
-    private val _cardName = mutableStateOf("")
-    val cardName: State<String> = _cardName
+    private val _cardName = mutableStateOf(TextInputState("", true, "Required"))
+    val cardName: State<TextInputState<String>> = _cardName
 
-    private val _expiry = mutableStateOf("")
-    val expiry: State<String> = _expiry
+    private val _last4Digits = mutableStateOf(TextInputState("", true, "Required"))
+    val last4Digits: State<TextInputState<String>> = _last4Digits
+
+    private val _expiry = mutableStateOf(TextInputState("", true, "Required"))
+    val expiry: State<TextInputState<String>> = _expiry
 
     private val _gracePeriod = mutableStateOf(false)
     val gracePeriod: State<Boolean> = _gracePeriod
 
-    private val _billDate = mutableStateOf("")
-    val billDate: State<String> = _billDate
+    private val _billDate = mutableStateOf(TextInputState("", true, "Required"))
+    val billDate: State<TextInputState<String>> = _billDate
 
-    private val _dueDate = mutableStateOf("")
-    val dueDate: State<String> = _dueDate
+    private val _dueDate = mutableStateOf(TextInputState("", true, "Required"))
+    val dueDate: State<TextInputState<String>> = _dueDate
 
-    private val _limit = mutableStateOf("")
-    val limit: State<String> = _limit
+    private val _limit = mutableStateOf(TextInputState("", true, "Required"))
+    val limit: State<TextInputState<String>> = _limit
 
-    private val _bankName = mutableStateOf("")
-    val bankName: State<String> = _bankName
-
-    private val _cardType = mutableStateOf(CardType.VISA)
-    val cardType: State<CardType> = _cardType
+    private val _bankName = mutableStateOf(TextInputState(""))
+    val bankName: State<TextInputState<String>> = _bankName
 
     private val _currentCCId = mutableIntStateOf(0)
     val currentCCId: State<Int> = _currentCCId
@@ -64,16 +69,17 @@ class AddEditCCViewModel @Inject constructor(
         savedStateHandle.get<Int>("ccId")?.let { ccId ->
             if (ccId != -1) {
                 viewModelScope.launch {
-                    creditCardUseCases.getCreditCard(ccId)?.also { creditCard ->
-                        _currentCCId.intValue = creditCard.id
-                        _last4Digits.value = creditCard.last4Digits
-                        _cardName.value = creditCard.cardName
-                        _expiry.value = creditCard.expiryDate
-                        _billDate.value = creditCard.billDate.toString()
-                        _dueDate.value = creditCard.dueDate.toString()
-                        _limit.value = creditCard.limit.toString()
-                        _bankName.value = creditCard.bankName ?: ""
-                        _cardType.value = creditCard.cardType
+                    creditCardUseCases.getCreditCard(ccId).first()?.let {
+                        _currentCCId.intValue = it.id
+                        _cardType.value = it.cardType
+                        _cardName.value = TextInputState(it.cardName)
+                        _last4Digits.value = TextInputState(it.last4Digits)
+                        _expiry.value = TextInputState(it.expiryDate)
+                        _billDate.value = TextInputState(it.billDate.toString())
+                        _gracePeriod.value = it.gracePeriod
+                        _dueDate.value = TextInputState(it.dueDate.toString())
+                        _limit.value = TextInputState(it.limit.toString())
+                        _bankName.value = TextInputState(it.bankName ?: "")
                     }
                 }
             }
@@ -88,28 +94,22 @@ class AddEditCCViewModel @Inject constructor(
     fun onEvent(event: AddEditCCEvent) {
         when (event) {
             is AddEditCCEvent.SelectedCardType -> {
-                _cardType.value = event.value
-            }
-
-            is AddEditCCEvent.EnteredLast4Digits -> {
-                if (event.value.isEmpty()) {
-                    _last4Digits.value = event.value
-                }
-                if (event.value.length <= 4 && event.value.toIntOrNull() != null && event.value.toInt() >= 0) {
-                    _last4Digits.value = event.value
-                }
+                _cardType.value = CardType.valueOf(event.value)
             }
 
             is AddEditCCEvent.EnteredCardName -> {
-                _cardName.value = event.value
+                _cardName.value = TextInputState(event.value.trim()).validateMinMaxLength(3, 25)
+            }
+
+            is AddEditCCEvent.EnteredLast4Digits -> {
+                _last4Digits.value = TextInputState(event.value.trim())
+                    .validateIsNumeric()
+                    .validateMinMaxLength(4, 4)
             }
 
             is AddEditCCEvent.EnteredExpiry -> {
-                if (event.value.isEmpty()) {
-                    _expiry.value = event.value
-                }
-                if (validateExpiry(event.value)) {
-                    _expiry.value = event.value
+                if (event.value.length <= 4) {
+                    _expiry.value = TextInputState(event.value.trim()).validateCCExpiry()
                 }
             }
 
@@ -117,63 +117,49 @@ class AddEditCCViewModel @Inject constructor(
                 _gracePeriod.value = event.value
             }
 
-            is AddEditCCEvent.EnteredDueDate -> {
-                if (event.value.isEmpty()) {
-                    _dueDate.value = event.value
-                }
-                val value: Int? = event.value.toIntOrNull()
-                if (value != null && event.value.toInt() > 0 && event.value.toInt() < 31) {
-                    _dueDate.value = event.value
-                }
+            is AddEditCCEvent.EnteredBillDate -> {
+                _billDate.value = TextInputState(event.value.trim()).validateInRange(1, 31)
             }
 
-            is AddEditCCEvent.EnteredBillDate -> {
-                if (event.value.isEmpty()) {
-                    _billDate.value = event.value
-                }
-                val value: Int? = event.value.toIntOrNull()
-                if (value != null && event.value.toInt() > 0 && value < 31) {
-                    _billDate.value = event.value
+            is AddEditCCEvent.EnteredDueDate -> {
+                if (_gracePeriod.value) {
+                    _dueDate.value = TextInputState(event.value.trim()).validateIsNumeric()
+                } else {
+                    _dueDate.value = TextInputState(event.value.trim()).validateInRange(1, 31)
                 }
             }
 
             is AddEditCCEvent.EnteredLimit -> {
-                if (event.value.isEmpty()) {
-                    _limit.value = event.value
-                }
-                if (event.value.toIntOrNull() != null && event.value.toInt() > 0) {
-                    _limit.value = event.value
+                if (event.value.length <= 8) {
+                    _limit.value = TextInputState(event.value.trim()).validateIsNumeric()
                 }
             }
 
             is AddEditCCEvent.EnteredBankName -> {
-                _bankName.value = event.value
+                _bankName.value = TextInputState(event.value.trim()).validateMinMaxLength(0, 25)
             }
 
             is AddEditCCEvent.UpsertCreditCard -> {
                 viewModelScope.launch {
-                    try {
-                        creditCardUseCases.upsertCreditCard(
-                            CreditCard(
-                                cardName = cardName.value,
-                                last4Digits = last4Digits.value,
-                                expiryDate = expiry.value,
-                                billDate = billDate.value.toIntOrNull() ?: 0,
-                                dueDate = dueDate.value.toIntOrNull() ?: 0,
-                                cardType = cardType.value,
-                                limit = limit.value.toIntOrNull() ?: 0,
-                                bankName = bankName.value,
-                                id = currentCCId.value
-                            )
-                        )
-                        _eventFlow.emit(UiEvent.NavigateUp)
-                    } catch (e: InvalidCreditCardException) {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save credit card"
-                            )
-                        )
+                    if(!validCCData()) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Please fix the errors"))
+                        return@launch
                     }
+                    creditCardUseCases.upsertCreditCard(
+                        CreditCard(
+                            id = currentCCId.value,
+                            cardType = cardType.value,
+                            cardName = cardName.value.data,
+                            last4Digits = last4Digits.value.data,
+                            expiryDate = expiry.value.data,
+                            billDate = billDate.value.data.toInt(),
+                            gracePeriod = gracePeriod.value,
+                            dueDate = dueDate.value.data.toInt(),
+                            limit = limit.value.data.toInt(),
+                            bankName = bankName.value.data
+                        )
+                    )
+                    _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
 
@@ -185,15 +171,18 @@ class AddEditCCViewModel @Inject constructor(
         }
     }
 
-    private fun validateExpiry(expiry: String): Boolean {
-        if (expiry.toIntOrNull() == null) return false
-        return when (expiry.length) {
-            1 -> expiry.toInt() < 2
-            2 -> expiry.toInt() in 1..12
-            3 -> expiry.toInt() < 130
-            4 -> expiry.toInt() in 101..1299
-            else -> false
+    private fun validCCData(): Boolean {
+        if (_cardName.value.error || _last4Digits.value.error || _expiry.value.error ||
+                _billDate.value.error || _dueDate.value.error ||  _limit.value.error) {
+            _cardName.value = _cardName.value.copy(displayError = true)
+            _last4Digits.value = _last4Digits.value.copy(displayError = true)
+            _expiry.value = _expiry.value.copy(displayError = true)
+            _billDate.value = _billDate.value.copy(displayError = true)
+            _dueDate.value = _dueDate.value.copy(displayError = true)
+            _limit.value = _limit.value.copy(displayError = true)
+            return false
         }
+        return true
     }
 
     sealed class UiEvent {

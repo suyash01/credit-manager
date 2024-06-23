@@ -4,25 +4,39 @@ import com.suyash.creditmanager.domain.util.DateFormat
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Currency
 import java.util.Locale
 
 class CMUtils {
     companion object {
-        fun expiryDateMask(expiryDate: String): String {
-            var out = ""
-            for (i in expiryDate.indices) {
-                out += expiryDate[i]
-                if (i == 1) out += "/"
-            }
-            return out
-        }
-
         fun currencyMask(amount: Float, countryCode: String): String {
-            return NumberFormat.getCurrencyInstance(Locale("", countryCode)).format(amount)
+            return NumberFormat.getCurrencyInstance().apply {
+                currency = Currency.getInstance(Locale("", countryCode))
+                maximumFractionDigits = 2
+            }.format(amount)
         }
 
         fun formatDate(dateTime: LocalDate, dateFormat: DateFormat): String {
             return dateTime.format(DateTimeFormatter.ofPattern(dateFormat.format))
         }
+    }
+}
+
+fun formatCurrencyAmount(
+    amount: Float,
+    fractionDigits: Int = 2,
+    countryCode: String,
+    currencySymbol: Boolean = true
+): String {
+    val locale = Locale("", countryCode)
+    return if (currencySymbol) {
+        NumberFormat.getCurrencyInstance().apply {
+            currency = Currency.getInstance(locale)
+            maximumFractionDigits = fractionDigits
+        }.format(amount)
+    } else {
+        NumberFormat.getInstance(locale).apply {
+            maximumFractionDigits = fractionDigits
+        }.format(amount)
     }
 }

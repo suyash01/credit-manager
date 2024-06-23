@@ -8,21 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -47,7 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.presentation.commons.CMDateMask
+import com.suyash.creditmanager.presentation.commons.visual_transformations.CCExpiryTransformation
+import com.suyash.creditmanager.presentation.commons.components.CustomExposedDropdownMenuBox
+import com.suyash.creditmanager.presentation.commons.components.CustomOutlinedTextField
+import com.suyash.creditmanager.presentation.commons.visual_transformations.CurrencyTransformation
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Currency
 import java.util.Locale
@@ -119,64 +116,30 @@ fun AddEditCCScreen(
         ) {
             var ccTypeDropdownExpanded by remember { mutableStateOf(false) }
 
-            ExposedDropdownMenuBox(
-                modifier = Modifier.fillMaxWidth(),
+            CustomExposedDropdownMenuBox(
                 expanded = ccTypeDropdownExpanded,
                 onExpandedChange = {
                     ccTypeDropdownExpanded = !ccTypeDropdownExpanded
-                }) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    readOnly = true,
-                    value = viewModel.cardType.value.name,
-                    onValueChange = { },
-                    label = { Text("Card Type") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = ccTypeDropdownExpanded
-                        )
-                    }
-                )
-                ExposedDropdownMenu(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = ccTypeDropdownExpanded,
-                    onDismissRequest = {
-                        ccTypeDropdownExpanded = false
-                    }
-                ) {
-                    CardType.entries.forEach {
-                        DropdownMenuItem(
-                            text = { Text(text = it.name) },
-                            onClick = {
-                                viewModel.onEvent(AddEditCCEvent.SelectedCardType(it))
-                                ccTypeDropdownExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+                },
+                value = viewModel.cardType.value.name,
+                entries = CardType.entries.map { it.name },
+                onClick = {
+                    viewModel.onEvent(AddEditCCEvent.SelectedCardType(it))
+                    ccTypeDropdownExpanded = false
+                },
+                label = "Card Type"
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+            CustomOutlinedTextField(
+                label = "Card Name* ",
                 value = viewModel.cardName.value,
-                singleLine = true,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredCardName(newText))
                 },
-                label = { Text("Card Name") },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                value = viewModel.last4Digits.value,
-                onValueChange = { newText ->
-                    viewModel.onEvent(AddEditCCEvent.EnteredLast4Digits(newText))
-                },
+            CustomOutlinedTextField(
+                label = "Card Number*",
                 prefix = {
                     if (viewModel.cardType.value == CardType.AMEX) {
                         Text("XXXX-XXXXXX-X")
@@ -184,29 +147,24 @@ fun AddEditCCScreen(
                         Text("XXXX-XXXX-XXXX-")
                     }
                 },
-                label = { Text("Card Number") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                value = viewModel.last4Digits.value,
+                onValueChange = { newText ->
+                    viewModel.onEvent(AddEditCCEvent.EnteredLast4Digits(newText))
+                },
+                keyboardType = KeyboardType.Number,
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+            CustomOutlinedTextField(
+                label = "Expiry Date*",
+                placeholder = "MM/YY",
                 value = viewModel.expiry.value,
+                visualTransformation = CCExpiryTransformation(),
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredExpiry(newText))
                 },
-                visualTransformation = CMDateMask(),
-                label = { Text("Expiry Date") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                keyboardType = KeyboardType.Number,
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -216,78 +174,60 @@ fun AddEditCCScreen(
                     onCheckedChange = { viewModel.onEvent(AddEditCCEvent.CheckedGracePeriod(it)) }
                 )
                 Text(
-                    "Grace period instead of bill date"
+                    "Grace period instead of due date"
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
+                CustomOutlinedTextField(
                     modifier = Modifier.weight(1f),
-                    value = viewModel.dueDate.value,
-                    onValueChange = { newText ->
-                        viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
-                    },
-                    label = { Text("Due Date") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
+                    label = "Bill Date*",
                     value = viewModel.billDate.value,
                     onValueChange = { newText ->
                         viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
                     },
-                    label = { Text(if(viewModel.gracePeriod.value) "Grace Period" else "Bill Date") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                    keyboardType = KeyboardType.Number,
+                    keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Right) }
+                )
+                CustomOutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    label = if (viewModel.gracePeriod.value) "Grace Period*" else "Due Date*",
+                    value = viewModel.dueDate.value,
+                    onValueChange = { newText ->
+                        viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
+                    },
+                    keyboardType = KeyboardType.Number,
+                    keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+            CustomOutlinedTextField(
+                label = "Card Limit*",
+                prefix = {
+                    Text(
+                        text = Currency.getInstance(Locale("", viewModel.countryCode.value)).symbol
+                    )
+                },
                 value = viewModel.limit.value,
+                visualTransformation = CurrencyTransformation(viewModel.countryCode.value),
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
                 },
-                prefix = {
-                    Text(
-                        text = Currency.getInstance(
-                            Locale(
-                                "",
-                                viewModel.countryCode.value
-                            )
-                        ).symbol
-                    )
-                },
-                label = { Text("Limit") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                keyboardType = KeyboardType.Number,
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().padding(bottom = fabHeightInDp),
+            CustomOutlinedTextField(
+                label = "Bank Name",
                 value = viewModel.bankName.value,
-                singleLine = true,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredBankName(newText))
                 },
-                label = { Text("Bank Name") },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+                imeAction = ImeAction.Done,
+                keyboardActionOnNext = { focusManager.clearFocus() }
             )
+            Spacer(modifier = Modifier.height(fabHeightInDp))
         }
     }
 }

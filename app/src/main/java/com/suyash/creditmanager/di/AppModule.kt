@@ -19,8 +19,8 @@ import com.suyash.creditmanager.domain.repository.TransactionRepository
 import com.suyash.creditmanager.domain.repository.TxnCategoryRepository
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
-import com.suyash.creditmanager.domain.use_case.TransactionUseCase
-import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCase
+import com.suyash.creditmanager.domain.use_case.TransactionUseCases
+import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.use_case.credit_card.AddCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.DeleteCreditCard
 import com.suyash.creditmanager.domain.use_case.credit_card.GetCreditCard
@@ -101,8 +101,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTransactionUseCases(repository: TransactionRepository): TransactionUseCase {
-        return TransactionUseCase(
+    fun provideTransactionUseCases(repository: TransactionRepository): TransactionUseCases {
+        return TransactionUseCases(
             getTransactions = GetTransactions(repository),
             getTransaction = GetTransaction(repository),
             getTransactionsByCC = GetTransactionsByCC(repository),
@@ -127,8 +127,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTxnCategoryUseCases(repository: TxnCategoryRepository): TxnCategoryUseCase {
-        return TxnCategoryUseCase(
+    fun provideTxnCategoryUseCases(repository: TxnCategoryRepository): TxnCategoryUseCases {
+        return TxnCategoryUseCases(
             getTxnCategories = GetTxnCategories(repository),
             getTxnCategory = GetTxnCategory(repository),
             upsertTxnCategory = AddTxnCategory(repository),
