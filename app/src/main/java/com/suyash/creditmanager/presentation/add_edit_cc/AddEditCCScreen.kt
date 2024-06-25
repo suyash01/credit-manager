@@ -58,6 +58,11 @@ fun AddEditCCScreen(
     val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var fabHeight by remember {
+        mutableIntStateOf(0)
+    }
+    val fabHeightInDp = with(LocalDensity.current) { fabHeight.toDp() }
+
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -73,11 +78,6 @@ fun AddEditCCScreen(
             }
         }
     }
-
-    var fabHeight by remember {
-        mutableIntStateOf(0)
-    }
-    val fabHeightInDp = with(LocalDensity.current) { fabHeight.toDp() }
 
     Scaffold(
         snackbarHost = {
@@ -122,7 +122,7 @@ fun AddEditCCScreen(
                     ccTypeDropdownExpanded = !ccTypeDropdownExpanded
                 },
                 value = viewModel.cardType.value.name,
-                entries = CardType.entries.map { it.name },
+                entries = CardType.entries.map { Pair(it.name, it.name) },
                 onClick = {
                     viewModel.onEvent(AddEditCCEvent.SelectedCardType(it))
                     ccTypeDropdownExpanded = false
@@ -140,12 +140,10 @@ fun AddEditCCScreen(
             )
             CustomOutlinedTextField(
                 label = "Card Number*",
-                prefix = {
-                    if (viewModel.cardType.value == CardType.AMEX) {
-                        Text("XXXX-XXXXXX-X")
-                    } else {
-                        Text("XXXX-XXXX-XXXX-")
-                    }
+                prefix = if (viewModel.cardType.value == CardType.AMEX) {
+                    "XXXX-XXXXXX-X"
+                } else {
+                    "XXXX-XXXX-XXXX-"
                 },
                 value = viewModel.last4Digits.value,
                 onValueChange = { newText ->
@@ -205,13 +203,9 @@ fun AddEditCCScreen(
             }
             CustomOutlinedTextField(
                 label = "Card Limit*",
-                prefix = {
-                    Text(
-                        text = Currency.getInstance(Locale("", viewModel.countryCode.value)).symbol
-                    )
-                },
+                prefix = Currency.getInstance(Locale("", viewModel.countryCode.value)).symbol,
                 value = viewModel.limit.value,
-                visualTransformation = CurrencyTransformation(viewModel.countryCode.value),
+                visualTransformation = CurrencyTransformation(viewModel.countryCode.value, true, 0),
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
                 },

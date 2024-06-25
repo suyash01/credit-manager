@@ -158,11 +158,11 @@ class AddEditEMIViewModel @Inject constructor(
                         EMI(
                             id = currentEMIId.value,
                             name = name.value,
-                            amount = emiAmount.value.toFloatOrNull() ?: 0.0F,
-                            rate = interestRate.value.toFloatOrNull() ?: 0.0F,
-                            months = months.value.toIntOrNull() ?: 0,
+                            amount = emiAmount.value.toFloat(),
+                            rate = interestRate.value.toFloat(),
+                            months = months.value.toInt(),
                             date = emiDate.value,
-                            taxRate = taxRate.value.toFloatOrNull(),
+                            taxRate = taxRate.value.toFloat(),
                             card = if (_selectedCreditCard.intValue != -1) _selectedCreditCard.intValue else null
                         )
                     )

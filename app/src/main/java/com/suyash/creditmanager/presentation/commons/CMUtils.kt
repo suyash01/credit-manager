@@ -9,6 +9,7 @@ import java.util.Locale
 
 class CMUtils {
     companion object {
+        // TODO: remove this and use the more generic one below
         fun currencyMask(amount: Float, countryCode: String): String {
             return NumberFormat.getCurrencyInstance().apply {
                 currency = Currency.getInstance(Locale("", countryCode))

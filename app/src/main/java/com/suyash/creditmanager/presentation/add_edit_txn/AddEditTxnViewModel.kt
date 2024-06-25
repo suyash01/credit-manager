@@ -3,9 +3,11 @@ package com.suyash.creditmanager.presentation.add_edit_txn
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.model.TxnCategory
@@ -15,6 +17,9 @@ import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
 import com.suyash.creditmanager.domain.util.TransactionType
+import com.suyash.creditmanager.presentation.commons.TextInputState
+import com.suyash.creditmanager.presentation.commons.validateInRange
+import com.suyash.creditmanager.presentation.commons.validateMinMaxLength
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,10 +36,14 @@ class AddEditTxnViewModel @Inject constructor(
     private val transactionUseCase: TransactionUseCases,
     private val creditCardUseCases: CreditCardUseCases,
     private val txnCategoryUseCase: TxnCategoryUseCases,
+    private val dataStore: DataStore<AppSettings>,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
     private var getCreditCardsJob: Job? = null
     private var getTxnCategoriesJob: Job? = null
+
+    private val _countryCode = mutableStateOf("IN")
+    val countryCode: State<String> = _countryCode
 
     private val _creditCards = mutableStateOf(emptyList<CreditCard>())
     val creditCards: State<List<CreditCard>> = _creditCards
@@ -45,11 +54,11 @@ class AddEditTxnViewModel @Inject constructor(
     private val _dateFormatter = mutableStateOf(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
     val dateFormatter: State<DateTimeFormatter> = _dateFormatter
 
+    private val _name = mutableStateOf(TextInputState("", true, "Required"))
+    val name: State<TextInputState<String>> = _name
+
     private val _selectedCreditCard = mutableIntStateOf(-1)
     private val selectedCreditCard: State<Int> = _selectedCreditCard
-
-    private val _name = mutableStateOf("")
-    val name: State<String> = _name
 
     private val _txnType = mutableStateOf(TransactionType.DEBIT)
     val txnType: State<TransactionType> = _txnType
@@ -60,8 +69,8 @@ class AddEditTxnViewModel @Inject constructor(
     private val _txnDate = mutableStateOf(LocalDate.now())
     val txnDate: State<LocalDate> = _txnDate
 
-    private val _txnAmount = mutableStateOf("")
-    val txnAmount: State<String> = _txnAmount
+    private val _txnAmount = mutableStateOf(TextInputState("", true, "Required"))
+    val txnAmount: State<TextInputState<String>> = _txnAmount
 
     private val _currentTxnId = mutableIntStateOf(0)
     val currentTxnId: State<Int> = _currentTxnId
@@ -72,68 +81,80 @@ class AddEditTxnViewModel @Inject constructor(
     init {
         getCreditCardsAndCategories(CreditCardOrder.Name(OrderType.Ascending))
         savedStateHandle.get<Int>("txnId")?.let { txnId ->
-            if(txnId != -1) {
+            if (txnId != -1) {
                 viewModelScope.launch {
                     transactionUseCase.getTransaction(txnId)?.also { transaction ->
-                        _name.value = transaction.name
                         _currentTxnId.intValue = transaction.id
-                        _txnType.value = transaction.type
-                        _txnCategory.value = transaction.category?:""
-                        _txnAmount.value = transaction.amount.toString()
+                        _name.value = TextInputState(transaction.name)
                         _selectedCreditCard.intValue = transaction.card
+                        _txnType.value = transaction.type
+                        _txnCategory.value = transaction.category ?: ""
                         _txnDate.value = transaction.date
+                        _txnAmount.value = TextInputState(transaction.amount.toString())
                     }
                 }
+            }
+        }
+        viewModelScope.launch {
+            dataStore.data.collect {
+                _countryCode.value = it.countryCode
             }
         }
     }
 
     fun onEvent(event: AddEditTxnEvent) {
         when (event) {
-            is AddEditTxnEvent.EnteredAmount -> {
-                if(event.value.isEmpty()) {
-                    _txnAmount.value = event.value
-                }
-                val parts = event.value.split(".")
-                if(event.value.toFloatOrNull() != null
-                    && event.value.toFloat() > 0
-                    && parts.size <= 2
-                    && parts.getOrElse(1) { "0" }.length <= 2) {
-                    _txnAmount.value = event.value
-                }
-            }
             is AddEditTxnEvent.EnteredName -> {
-                _name.value = event.value
+                _name.value = TextInputState(event.value).validateMinMaxLength(3, 25)
             }
-            is AddEditTxnEvent.EnteredDate -> {
-                _txnDate.value = event.value
-            }
+
             is AddEditTxnEvent.SelectedCard -> {
-                _selectedCreditCard.intValue = event.value.id
+                _selectedCreditCard.intValue = event.value
             }
+
             is AddEditTxnEvent.SelectedTxnType -> {
                 _txnType.value = event.value
                 _txnCategory.value = ""
             }
+
             is AddEditTxnEvent.SelectedTxnCategory -> {
                 _txnCategory.value = event.value
             }
+
+            is AddEditTxnEvent.EnteredDate -> {
+                _txnDate.value = event.value
+            }
+
+            is AddEditTxnEvent.EnteredAmount -> {
+                _txnAmount.value =
+                    TextInputState(event.value.trim()).validateInRange(1, 21474836, 2)
+            }
+
             is AddEditTxnEvent.UpsertTransaction -> {
                 viewModelScope.launch {
+                    if(_selectedCreditCard.intValue == -1) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Please select a credit card"))
+                        return@launch
+                    }
+                    if(!validateTxnData()) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Please fix the errors"))
+                        return@launch
+                    }
                     transactionUseCase.upsertTransaction(
                         Transaction(
-                            name = name.value,
+                            id = currentTxnId.value,
+                            name = name.value.data,
+                            card = selectedCreditCard.value,
                             type = txnType.value,
                             category = txnCategory.value,
-                            amount = txnAmount.value.toFloatOrNull()?:0.0F,
-                            card = selectedCreditCard.value,
                             date = txnDate.value,
-                            id = currentTxnId.value
+                            amount = (txnAmount.value.data.toInt() / 100.0F)
                         )
                     )
                     _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
+
             is AddEditTxnEvent.BackPressed -> {
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.NavigateUp)
@@ -144,9 +165,10 @@ class AddEditTxnViewModel @Inject constructor(
 
     private fun getCreditCardsAndCategories(creditCardsOrder: CreditCardOrder) {
         getCreditCardsJob?.cancel()
-        getCreditCardsJob = creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
-            _creditCards.value = creditCards
-        }.launchIn(viewModelScope)
+        getCreditCardsJob =
+            creditCardUseCases.getCreditCards(creditCardsOrder).onEach { creditCards ->
+                _creditCards.value = creditCards
+            }.launchIn(viewModelScope)
         getTxnCategoriesJob?.cancel()
         getTxnCategoriesJob = txnCategoryUseCase.getTxnCategories().onEach { txnCategories ->
             _txnCategories.value = txnCategories
@@ -154,12 +176,22 @@ class AddEditTxnViewModel @Inject constructor(
     }
 
     fun getCCDisplay(): String {
-        val cc: CreditCard = creditCards.value.find { it.id == selectedCreditCard.value } ?: return ""
+        val cc: CreditCard =
+            creditCards.value.find { it.id == selectedCreditCard.value } ?: return ""
         return "${cc.cardName} (${cc.last4Digits})"
     }
 
+    private fun validateTxnData(): Boolean {
+        if (_name.value.error || _txnAmount.value.error) {
+            _name.value = _name.value.copy(displayError = true)
+            _txnAmount.value = _txnAmount.value.copy(displayError = true)
+            return false
+        }
+        return true
+    }
+
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String): UiEvent()
-        data object NavigateUp: UiEvent()
+        data class ShowSnackbar(val message: String) : UiEvent()
+        data object NavigateUp : UiEvent()
     }
 }

@@ -7,17 +7,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,18 +37,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.TransactionType
+import com.suyash.creditmanager.presentation.commons.components.CustomExposedDropdownMenuBox
+import com.suyash.creditmanager.presentation.commons.components.CustomOutlinedTextField
+import com.suyash.creditmanager.presentation.commons.visual_transformations.CurrencyTransformation
 import kotlinx.coroutines.flow.collectLatest
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Currency
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -61,11 +64,17 @@ fun AddEditTxnScreen(
     navController: NavController,
     viewModel: AddEditTxnViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     var openDatePickerDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
+    var fabHeight by remember {
+        mutableIntStateOf(0)
+    }
+    val fabHeightInDp = with(LocalDensity.current) { fabHeight.toDp() }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -81,11 +90,6 @@ fun AddEditTxnScreen(
             }
         }
     }
-
-    var fabHeight by remember {
-        mutableIntStateOf(0)
-    }
-    val fabHeightInDp = with(LocalDensity.current) { fabHeight.toDp() }
 
     Scaffold (
         snackbarHost = {
@@ -130,131 +134,49 @@ fun AddEditTxnScreen(
             var txnTypeDropdownExpanded by remember { mutableStateOf(false) }
             var txnCategoryDropdownExpanded by remember { mutableStateOf(false) }
 
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+            CustomOutlinedTextField(
+                label = "Name*",
                 value = viewModel.name.value,
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditTxnEvent.EnteredName(newText))
                 },
-                label = { Text("Name") }
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
+            CustomExposedDropdownMenuBox(
+                expanded = ccDropdownExpanded,
+                onExpandedChange = { ccDropdownExpanded = !ccDropdownExpanded },
+                value = viewModel.getCCDisplay(),
+                entries = viewModel.creditCards.value.map { Pair(it.id, "${it.cardName} (${it.last4Digits})") },
+                onClick = {
+                    viewModel.onEvent(AddEditTxnEvent.SelectedCard(it))
+                    ccDropdownExpanded = false
+                },
+                label = "Credit Card*"
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ExposedDropdownMenuBox(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = ccDropdownExpanded,
-                onExpandedChange = {
-                    ccDropdownExpanded = !ccDropdownExpanded
-                }) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    readOnly = true,
-                    value = viewModel.getCCDisplay(),
-                    onValueChange = { },
-                    label = { Text("Credit Card") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = ccDropdownExpanded
-                        )
-                    }
-                )
-                ExposedDropdownMenu(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = ccDropdownExpanded,
-                    onDismissRequest = {
-                        ccDropdownExpanded = false
-                    }
-                ) {
-                    viewModel.creditCards.value.forEach {
-                        DropdownMenuItem(
-                            text = { Text(text = "${it.cardName} (${it.last4Digits})") },
-                            onClick = {
-                                viewModel.onEvent(AddEditTxnEvent.SelectedCard(it))
-                                ccDropdownExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            ExposedDropdownMenuBox(
-                modifier = Modifier.fillMaxWidth(),
+            CustomExposedDropdownMenuBox(
                 expanded = txnTypeDropdownExpanded,
-                onExpandedChange = {
-                    txnTypeDropdownExpanded = !txnTypeDropdownExpanded
-                }) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    readOnly = true,
-                    value = viewModel.txnType.value.name,
-                    onValueChange = { },
-                    label = { Text("Transaction Type") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = txnTypeDropdownExpanded
-                        )
-                    }
-                )
-                ExposedDropdownMenu(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = txnTypeDropdownExpanded,
-                    onDismissRequest = {
-                        txnTypeDropdownExpanded = false
-                    }
-                ) {
-                    TransactionType.entries.forEach {
-                        DropdownMenuItem(
-                            text = { Text(text = it.name) },
-                            onClick = {
-                                viewModel.onEvent(AddEditTxnEvent.SelectedTxnType(it))
-                                txnTypeDropdownExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+                onExpandedChange = { txnTypeDropdownExpanded = !txnTypeDropdownExpanded },
+                value = viewModel.txnType.value.name,
+                entries = TransactionType.entries.map { Pair(it, it.name) },
+                onClick = {
+                    viewModel.onEvent(AddEditTxnEvent.SelectedTxnType(it))
+                    txnTypeDropdownExpanded = false
+                },
+                label = "Transaction Type*"
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            ExposedDropdownMenuBox(
-                modifier = Modifier.fillMaxWidth(),
+            CustomExposedDropdownMenuBox(
                 expanded = txnCategoryDropdownExpanded,
-                onExpandedChange = {
-                    txnCategoryDropdownExpanded = !txnCategoryDropdownExpanded
-                }) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    readOnly = true,
-                    value = viewModel.txnCategory.value,
-                    onValueChange = { },
-                    label = { Text("Transaction Category") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = txnCategoryDropdownExpanded
-                        )
-                    }
-                )
-                ExposedDropdownMenu(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = txnCategoryDropdownExpanded,
-                    onDismissRequest = {
-                        txnCategoryDropdownExpanded = false
-                    }
-                ) {
-                    viewModel.txnCategories.value.filter { it.type == viewModel.txnType.value }.forEach {
-                        DropdownMenuItem(
-                            text = { Text(text = it.name) },
-                            onClick = {
-                                viewModel.onEvent(AddEditTxnEvent.SelectedTxnCategory(it.name))
-                                txnCategoryDropdownExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+                onExpandedChange = { txnCategoryDropdownExpanded = !txnCategoryDropdownExpanded },
+                value = viewModel.txnCategory.value,
+                entries = viewModel.txnCategories.value.filter { it.type == viewModel.txnType.value }.map { Pair(it.name, it.name) },
+                onClick = {
+                    viewModel.onEvent(AddEditTxnEvent.SelectedTxnCategory(it))
+                    txnCategoryDropdownExpanded = false
+                },
+                label = "Transaction Category"
+            )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 modifier = Modifier
@@ -281,15 +203,18 @@ fun AddEditTxnScreen(
                 )
             )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().padding(bottom = fabHeightInDp),
+            CustomOutlinedTextField(
+                label = "Amount*",
+                prefix = Currency.getInstance(Locale("", viewModel.countryCode.value)).symbol,
                 value = viewModel.txnAmount.value,
+                visualTransformation = CurrencyTransformation(viewModel.countryCode.value),
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditTxnEvent.EnteredAmount(newText))
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Amount") }
+                keyboardType = KeyboardType.Number,
+                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
+            Spacer(modifier = Modifier.height(fabHeightInDp))
             if(openDatePickerDialog) {
                 val datePickerState = rememberDatePickerState(
                     initialSelectedDateMillis = TimeUnit.DAYS.toMillis(viewModel.txnDate.value.toEpochDay())

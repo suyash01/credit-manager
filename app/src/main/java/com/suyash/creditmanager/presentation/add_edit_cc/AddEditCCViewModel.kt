@@ -29,7 +29,7 @@ class AddEditCCViewModel @Inject constructor(
     private val dataStore: DataStore<AppSettings>,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _countryCode = mutableStateOf("")
+    private val _countryCode = mutableStateOf("IN")
     val countryCode: State<String> = _countryCode
 
     private val _cardType = mutableStateOf(CardType.VISA)
@@ -130,9 +130,7 @@ class AddEditCCViewModel @Inject constructor(
             }
 
             is AddEditCCEvent.EnteredLimit -> {
-                if (event.value.length <= 8) {
-                    _limit.value = TextInputState(event.value.trim()).validateIsNumeric()
-                }
+                _limit.value = TextInputState(event.value.trim()).validateInRange(1, 2147483647)
             }
 
             is AddEditCCEvent.EnteredBankName -> {

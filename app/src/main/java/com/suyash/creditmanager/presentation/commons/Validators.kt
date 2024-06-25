@@ -20,10 +20,18 @@ fun TextInputState<String>.validateMinMaxLength(
 
     // Validate if the input data is within the specified length range
     if (data.length < minLength) {
-        return copy(error = true, errorMessage = "Minimum allowed length is $minLength", displayError = true)
+        return copy(
+            error = true,
+            errorMessage = "Minimum allowed length is $minLength",
+            displayError = true
+        )
     }
     if (data.length > maxLength) {
-        return copy(error = true, errorMessage = "Maximum allowed length is $maxLength", displayError = true)
+        return copy(
+            error = true,
+            errorMessage = "Maximum allowed length is $maxLength",
+            displayError = true
+        )
     }
 
     return this
@@ -74,23 +82,39 @@ fun TextInputState<String>.validateCCExpiry(): TextInputState<String> {
 }
 
 /**
- * Validates if the input data is within the specified integer range.
+ * Validates numeric input within a specified range and optionally checks for a specific number of decimals.
  *
- * @receiver The [TextInputState] containing the input data to be validated.
- * @param minValue The minimum allowable value (inclusive) for validation.
- * @param maxValue The maximum allowable value (inclusive) for validation.
- * @return A [TextInputState] object with updated error state and message if the input
- *         data is not within the specified range, otherwise returns the original
- *         [TextInputState] unchanged.
+ * @param minValue The minimum allowed value for validation.
+ * @param maxValue The maximum allowed value for validation.
+ * @param numberOfDecimals Optional. The number of decimal places to consider (default is 0).
+ * @return An updated [TextInputState] with error flags set if validation fails.
  */
-fun TextInputState<String>.validateInRange(minValue: Int, maxValue: Int): TextInputState<String> {
+fun TextInputState<String>.validateInRange(
+    minValue: Int,
+    maxValue: Int,
+    numberOfDecimals: Int = 0
+): TextInputState<String> {
+    // Return early if there's already an error flagged
     if (error) {
         return this
     }
 
-    // Validate if the input data can be converted to an integer and is within the specified range
-    if (data.toIntOrNull() == null || data.toInt() !in minValue..maxValue) {
-        return copy(error = true, errorMessage = "Not a valid day of the month", displayError = true)
+    // Check if the input is a valid integer
+    if (data.toIntOrNull() == null) {
+        return copy(error = true, errorMessage = "Not a valid number", displayError = true)
+    }
+
+    // Convert the input to an integer with consideration for decimal places
+    val number: Int =
+        if (numberOfDecimals > 0) (data.toInt() / 10 * numberOfDecimals) else data.toInt()
+
+    // Validate if the number falls within the specified range
+    if (number !in minValue..maxValue) {
+        return copy(
+            error = true,
+            errorMessage = "Number should be in range $minValue and $maxValue",
+            displayError = true
+        )
     }
 
     return this

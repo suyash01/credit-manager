@@ -9,16 +9,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomExposedDropdownMenuBox(
+fun <T> CustomExposedDropdownMenuBox(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     value: String,
-    entries: List<String>,
-    onClick: (String) -> Unit,
+    entries: List<Pair<T, String>>,
+    onClick: (T) -> Unit,
     label: String
 ) {
     ExposedDropdownMenuBox(
@@ -33,7 +34,7 @@ fun CustomExposedDropdownMenuBox(
             readOnly = true,
             value = value,
             onValueChange = { },
-            label = { Text(label) },
+            label = { Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded
@@ -47,8 +48,8 @@ fun CustomExposedDropdownMenuBox(
         ) {
             entries.forEach {
                 DropdownMenuItem(
-                    text = { Text(it) },
-                    onClick = { onClick(it) }
+                    text = { Text(text = it.second, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    onClick = { onClick(it.first) }
                 )
             }
         }

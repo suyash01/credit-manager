@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import com.suyash.creditmanager.presentation.commons.TextInputState
 
 @Composable
@@ -23,7 +24,7 @@ fun CustomOutlinedTextField(
     label: String,
     value: TextInputState<String>,
     onValueChange: (String) -> Unit,
-    prefix: @Composable (() -> Unit)? = null,
+    prefix: String = "",
     placeholder: String = "",
     visualTransformation: VisualTransformation = VisualTransformation.None,
     imeAction: ImeAction = ImeAction.Next,
@@ -36,12 +37,12 @@ fun CustomOutlinedTextField(
         singleLine = true,
         onValueChange = onValueChange,
         isError = value.error && value.displayError,
-        label = { Text(label) },
-        placeholder = { Text(placeholder) },
-        prefix = prefix,
+        label = { Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        placeholder = { Text(text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        prefix = { Text(text = prefix) },
         trailingIcon = {
             if (value.error && value.displayError)
-                Icon(Icons.Filled.Error,"error", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Filled.Error, "error", tint = MaterialTheme.colorScheme.error)
         },
         supportingText = {
             if (value.error && value.displayError && value.errorMessage != null) {
@@ -53,7 +54,10 @@ fun CustomOutlinedTextField(
             }
         },
         visualTransformation = visualTransformation,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction, keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = imeAction,
+            keyboardType = keyboardType
+        ),
         keyboardActions = KeyboardActions(onNext = keyboardActionOnNext)
     )
 }

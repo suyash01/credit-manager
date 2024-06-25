@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.presentation.commons.CMUtils
+import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
 
 @Composable
 fun CreditCardItem(
@@ -56,7 +56,7 @@ fun CreditCardItem(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = CMUtils.currencyMask(creditCard.limit.toFloat(), countryCode),
+                        text = formatCurrencyAmount(creditCard.limit.toFloat(), 0, countryCode),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
