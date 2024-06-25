@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.util.TransactionType
-import com.suyash.creditmanager.presentation.commons.CMUtils
+import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
 import com.suyash.creditmanager.ui.theme.CreditForeground
 import com.suyash.creditmanager.ui.theme.DebitForeground
 
@@ -51,7 +51,7 @@ fun TransactionItem(
                         color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )
                     Text(
-                        text = CMUtils.currencyMask(transaction.amount, countryCode),
+                        text = formatCurrencyAmount(transaction.amount, countryCode),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
                     )

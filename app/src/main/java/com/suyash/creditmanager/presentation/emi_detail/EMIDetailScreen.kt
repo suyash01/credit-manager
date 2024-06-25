@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.suyash.creditmanager.presentation.commons.CMUtils
 import com.suyash.creditmanager.presentation.commons.Screen
+import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
@@ -45,12 +45,13 @@ fun EMIDetailScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is EMIDetailViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
+
                 is EMIDetailViewModel.UiEvent.NavigateUp -> {
                     navController.navigateUp()
                 }
@@ -100,7 +101,7 @@ fun EMIDetailScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = viewModel.emi?.name?:"",
+                text = viewModel.emi?.name ?: "",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -111,7 +112,12 @@ fun EMIDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "P: ${CMUtils.currencyMask(viewModel.emi?.amount?:0.0F, viewModel.countryCode)} @ ${viewModel.emi?.rate}%",
+                    text = "P: ${
+                        formatCurrencyAmount(
+                            viewModel.emi?.amount ?: 0.0F,
+                            viewModel.countryCode
+                        )
+                    } @ ${viewModel.emi?.rate}%",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -124,20 +130,38 @@ fun EMIDetailScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "EMI: ${CMUtils.currencyMask(viewModel.emiAmount, viewModel.countryCode)} X ${viewModel.emi?.months} = ${CMUtils.currencyMask(viewModel.totalAmount, viewModel.countryCode)}",
+                text = "EMI: ${
+                    formatCurrencyAmount(
+                        viewModel.emiAmount,
+                        viewModel.countryCode
+                    )
+                } X ${viewModel.emi?.months} = ${
+                    formatCurrencyAmount(
+                        viewModel.totalAmount,
+                        viewModel.countryCode
+                    )
+                }",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Interest: ${CMUtils.currencyMask(viewModel.totalAmount - (viewModel.emi?.amount?:0.0F), viewModel.countryCode)}",
+                text = "Interest: ${
+                    formatCurrencyAmount(
+                        viewModel.totalAmount - (viewModel.emi?.amount ?: 0.0F),
+                        viewModel.countryCode
+                    )
+                }",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
-            if((viewModel.emi?.taxRate?.toInt() ?: 0) != 0) {
+            if ((viewModel.emi?.taxRate?.toInt() ?: 0) != 0) {
                 Text(
-                    text = "TToI: ${CMUtils.currencyMask(viewModel.schedule.sumOf { it.taxOnInterest }.toFloat(), viewModel.countryCode)}",
+                    text = "TToI: ${
+                        formatCurrencyAmount(viewModel.schedule.sumOf { it.taxOnInterest }
+                            .toFloat(), viewModel.countryCode)
+                    }",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -164,24 +188,36 @@ fun EMIDetailScreen(
                                 .weight(1f)
                         ) {
                             Text(
-                                text = "PP: " + CMUtils.currencyMask(it.principalAmount.toFloat(), viewModel.countryCode),
+                                text = "PP: " + formatCurrencyAmount(
+                                    it.principalAmount.toFloat(),
+                                    viewModel.countryCode
+                                ),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "IP: " + CMUtils.currencyMask(it.interestAmount.toFloat(), viewModel.countryCode),
+                                text = "IP: " + formatCurrencyAmount(
+                                    it.interestAmount.toFloat(),
+                                    viewModel.countryCode
+                                ),
                                 style = MaterialTheme.typography.bodySmall
                             )
-                            if(it.taxOnInterest.toInt() != 0) {
+                            if (it.taxOnInterest.toInt() != 0) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "ToI: " + CMUtils.currencyMask(it.taxOnInterest.toFloat(), viewModel.countryCode),
+                                    text = "ToI: " + formatCurrencyAmount(
+                                        it.taxOnInterest.toFloat(),
+                                        viewModel.countryCode
+                                    ),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         }
                         Text(
-                            text = CMUtils.currencyMask(it.remainingBalance.toFloat().absoluteValue, viewModel.countryCode),
+                            text = formatCurrencyAmount(
+                                it.remainingBalance.toFloat().absoluteValue,
+                                viewModel.countryCode
+                            ),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }

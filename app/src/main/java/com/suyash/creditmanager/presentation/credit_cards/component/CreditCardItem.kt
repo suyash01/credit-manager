@@ -56,7 +56,7 @@ fun CreditCardItem(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = formatCurrencyAmount(creditCard.limit.toFloat(), 0, countryCode),
+                        text = formatCurrencyAmount(creditCard.limit.toFloat(), countryCode),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

@@ -16,7 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.util.DateFormat
-import com.suyash.creditmanager.presentation.commons.CMUtils
+import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
+import com.suyash.creditmanager.presentation.commons.formatDate
 import java.time.LocalDate
 
 @Composable
@@ -49,7 +50,7 @@ fun EMIItem(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = CMUtils.currencyMask(emi.amount, countryCode),
+                        text = formatCurrencyAmount(emi.amount, countryCode),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -59,7 +60,7 @@ fun EMIItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = CMUtils.formatDate(emi.date, dateFormat),
+                        text = formatDate(emi.date, dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
@@ -67,7 +68,7 @@ fun EMIItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = CMUtils.formatDate(emi.date.plusMonths(emi.months.toLong() - 1), dateFormat),
+                        text = formatDate(emi.date.plusMonths(emi.months.toLong() - 1), dateFormat),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -140,7 +142,7 @@ fun AddEditTxnScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditTxnEvent.EnteredName(newText))
                 },
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             CustomExposedDropdownMenuBox(
                 expanded = ccDropdownExpanded,
@@ -212,7 +214,8 @@ fun AddEditTxnScreen(
                     viewModel.onEvent(AddEditTxnEvent.EnteredAmount(newText))
                 },
                 keyboardType = KeyboardType.Number,
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
             )
             Spacer(modifier = Modifier.height(fabHeightInDp))
             if(openDatePickerDialog) {

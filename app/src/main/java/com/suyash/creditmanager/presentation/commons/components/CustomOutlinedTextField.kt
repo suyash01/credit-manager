@@ -1,7 +1,6 @@
 package com.suyash.creditmanager.presentation.commons.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,11 +24,12 @@ fun CustomOutlinedTextField(
     value: TextInputState<String>,
     onValueChange: (String) -> Unit,
     prefix: String = "",
+    suffix: String = "",
     placeholder: String = "",
     visualTransformation: VisualTransformation = VisualTransformation.None,
     imeAction: ImeAction = ImeAction.Next,
     keyboardType: KeyboardType = KeyboardType.Text,
-    keyboardActionOnNext: (KeyboardActionScope.() -> Unit)? = null
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
@@ -40,6 +40,7 @@ fun CustomOutlinedTextField(
         label = { Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         placeholder = { Text(text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         prefix = { Text(text = prefix) },
+        suffix = { Text(text = suffix) },
         trailingIcon = {
             if (value.error && value.displayError)
                 Icon(Icons.Filled.Error, "error", tint = MaterialTheme.colorScheme.error)
@@ -58,6 +59,6 @@ fun CustomOutlinedTextField(
             imeAction = imeAction,
             keyboardType = keyboardType
         ),
-        keyboardActions = KeyboardActions(onNext = keyboardActionOnNext)
+        keyboardActions = keyboardActions
     )
 }

@@ -7,26 +7,14 @@ import java.time.format.DateTimeFormatter
 import java.util.Currency
 import java.util.Locale
 
-class CMUtils {
-    companion object {
-        // TODO: remove this and use the more generic one below
-        fun currencyMask(amount: Float, countryCode: String): String {
-            return NumberFormat.getCurrencyInstance().apply {
-                currency = Currency.getInstance(Locale("", countryCode))
-                maximumFractionDigits = 2
-            }.format(amount)
-        }
-
-        fun formatDate(dateTime: LocalDate, dateFormat: DateFormat): String {
-            return dateTime.format(DateTimeFormatter.ofPattern(dateFormat.format))
-        }
-    }
+fun formatDate(dateTime: LocalDate, dateFormat: DateFormat): String {
+    return dateTime.format(DateTimeFormatter.ofPattern(dateFormat.format))
 }
 
 fun formatCurrencyAmount(
     amount: Float,
-    fractionDigits: Int = 2,
     countryCode: String,
+    fractionDigits: Int = 2,
     currencySymbol: Boolean = true
 ): String {
     val locale = Locale("", countryCode)

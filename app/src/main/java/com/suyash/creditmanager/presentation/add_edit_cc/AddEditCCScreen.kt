@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -136,7 +137,7 @@ fun AddEditCCScreen(
                 onValueChange = { newText ->
                     viewModel.onEvent(AddEditCCEvent.EnteredCardName(newText))
                 },
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             CustomOutlinedTextField(
                 label = "Card Number*",
@@ -150,7 +151,7 @@ fun AddEditCCScreen(
                     viewModel.onEvent(AddEditCCEvent.EnteredLast4Digits(newText))
                 },
                 keyboardType = KeyboardType.Number,
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             CustomOutlinedTextField(
                 label = "Expiry Date*",
@@ -161,7 +162,7 @@ fun AddEditCCScreen(
                     viewModel.onEvent(AddEditCCEvent.EnteredExpiry(newText))
                 },
                 keyboardType = KeyboardType.Number,
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -188,7 +189,7 @@ fun AddEditCCScreen(
                         viewModel.onEvent(AddEditCCEvent.EnteredBillDate(newText))
                     },
                     keyboardType = KeyboardType.Number,
-                    keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Right) }
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Right) })
                 )
                 CustomOutlinedTextField(
                     modifier = Modifier.weight(1f),
@@ -198,7 +199,7 @@ fun AddEditCCScreen(
                         viewModel.onEvent(AddEditCCEvent.EnteredDueDate(newText))
                     },
                     keyboardType = KeyboardType.Number,
-                    keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
                 )
             }
             CustomOutlinedTextField(
@@ -210,7 +211,7 @@ fun AddEditCCScreen(
                     viewModel.onEvent(AddEditCCEvent.EnteredLimit(newText))
                 },
                 keyboardType = KeyboardType.Number,
-                keyboardActionOnNext = { focusManager.moveFocus(FocusDirection.Down) }
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             CustomOutlinedTextField(
                 label = "Bank Name",
@@ -219,7 +220,7 @@ fun AddEditCCScreen(
                     viewModel.onEvent(AddEditCCEvent.EnteredBankName(newText))
                 },
                 imeAction = ImeAction.Done,
-                keyboardActionOnNext = { focusManager.clearFocus() }
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
             )
             Spacer(modifier = Modifier.height(fabHeightInDp))
         }

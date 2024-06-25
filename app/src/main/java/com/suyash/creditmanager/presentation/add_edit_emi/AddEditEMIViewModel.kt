@@ -3,9 +3,11 @@ package com.suyash.creditmanager.presentation.add_edit_emi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
@@ -13,6 +15,9 @@ import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.util.CardType
 import com.suyash.creditmanager.domain.util.CreditCardOrder
 import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.presentation.commons.TextInputState
+import com.suyash.creditmanager.presentation.commons.validateInRange
+import com.suyash.creditmanager.presentation.commons.validateMinMaxLength
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,9 +34,13 @@ import javax.inject.Inject
 class AddEditEMIViewModel @Inject constructor(
     private val creditCardUseCases: CreditCardUseCases,
     private val emiUseCases: EMIUseCases,
+    private val dataStore: DataStore<AppSettings>,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var getCreditCardsJob: Job? = null
+
+    private val _countryCode = mutableStateOf("IN")
+    val countryCode: State<String> = _countryCode
 
     private val _dateFormatter = mutableStateOf(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
     val dateFormatter: State<DateTimeFormatter> = _dateFormatter
@@ -39,26 +48,25 @@ class AddEditEMIViewModel @Inject constructor(
     private val _creditCards = mutableStateOf(emptyList<CreditCard>())
     val creditCards: State<List<CreditCard>> = _creditCards
 
-    private val _selectedCreditCard = mutableIntStateOf(-1)
-    private val selectedCreditCard: State<Int> = _selectedCreditCard
+    private val _name = mutableStateOf(TextInputState("", true, "Required"))
+    val name: State<TextInputState<String>> = _name
 
-    private val _name = mutableStateOf("")
-    val name: State<String> = _name
+    private val _emiAmount = mutableStateOf(TextInputState("", true, "Required"))
+    val emiAmount: State<TextInputState<String>> = _emiAmount
 
-    private val _emiAmount = mutableStateOf("")
-    val emiAmount: State<String> = _emiAmount
+    private val _interestRate = mutableStateOf(TextInputState("", true, "Required"))
+    val interestRate: State<TextInputState<String>> = _interestRate
 
-    private val _interestRate = mutableStateOf("")
-    val interestRate: State<String> = _interestRate
-
-    private val _taxRate = mutableStateOf("")
-    val taxRate: State<String> = _taxRate
-
-    private val _months = mutableStateOf("")
-    val months: State<String> = _months
+    private val _months = mutableStateOf(TextInputState("", true, "Required"))
+    val months: State<TextInputState<String>> = _months
 
     private val _emiDate = mutableStateOf(LocalDate.now())
     val emiDate: State<LocalDate> = _emiDate
+
+    private val _selectedCreditCard = mutableIntStateOf(-1)
+
+    private val _taxRate = mutableStateOf(TextInputState(""))
+    val taxRate: State<TextInputState<String>> = _taxRate
 
     private val _currentEMIId = mutableIntStateOf(0)
     val currentEMIId: State<Int> = _currentEMIId
@@ -73,16 +81,25 @@ class AddEditEMIViewModel @Inject constructor(
                 viewModelScope.launch {
                     emiUseCases.getEMI(emiId).first()?.let {
                         _currentEMIId.intValue = it.id
-                        _name.value = it.name
-                        _emiAmount.value = it.name
-                        _emiAmount.value = it.amount.toString()
-                        _interestRate.value = it.rate.toString()
-                        _taxRate.value = it.taxRate?.toString() ?: ""
-                        _months.value = it.months.toString()
+                        _name.value = TextInputState(it.name)
+                        _emiAmount.value = TextInputState(it.name)
+                        _emiAmount.value = TextInputState((it.amount * 100).toInt().toString())
+                        _interestRate.value = TextInputState((it.rate * 100).toInt().toString())
+                        _months.value = TextInputState(it.months.toString())
                         _emiDate.value = it.date
                         _selectedCreditCard.intValue = it.card ?: -1
+                        _taxRate.value =
+                            TextInputState(it.taxRate?.let { tr -> tr * 100 }?.toInt()?.toString()
+                                ?: ""
+                            )
                     }
                 }
+            }
+        }
+        viewModelScope.launch {
+            dataStore.data.collect {
+                _countryCode.value = it.countryCode
+                _dateFormatter.value = it.dateFormat.formatter
             }
         }
     }
@@ -90,58 +107,19 @@ class AddEditEMIViewModel @Inject constructor(
     fun onEvent(event: AddEditEMIEvent) {
         when (event) {
             is AddEditEMIEvent.EnteredName -> {
-                _name.value = event.value
+                _name.value = TextInputState(event.value).validateMinMaxLength(3, 25)
             }
 
             is AddEditEMIEvent.EnteredAmount -> {
-                if (event.value.isEmpty()) {
-                    _emiAmount.value = event.value
-                }
-                val parts = event.value.split(".")
-                if (event.value.toFloatOrNull() != null
-                    && event.value.toFloat() > 0
-                    && parts.size <= 2
-                    && parts.getOrElse(1) { "0" }.length <= 2
-                ) {
-                    _emiAmount.value = event.value
-                }
+                _emiAmount.value = TextInputState(event.value).validateInRange(1, 21474836, 2)
             }
 
             is AddEditEMIEvent.EnteredRate -> {
-                if (event.value.isEmpty()) {
-                    _interestRate.value = event.value
-                }
-                val parts = event.value.split(".")
-                if (event.value.toFloatOrNull() != null
-                    && event.value.toFloat() > 0
-                    && parts.size <= 2
-                    && parts.getOrElse(1) { "0" }.length <= 2
-                ) {
-                    _interestRate.value = event.value
-                }
-            }
-
-            is AddEditEMIEvent.EnteredTaxRate -> {
-                if (event.value.isEmpty()) {
-                    _interestRate.value = event.value
-                }
-                val parts = event.value.split(".")
-                if (event.value.toFloatOrNull() != null
-                    && event.value.toFloat() > 0
-                    && parts.size <= 2
-                    && parts.getOrElse(1) { "0" }.length <= 2
-                ) {
-                    _taxRate.value = event.value
-                }
+                _interestRate.value = TextInputState(event.value).validateInRange(1, 21474836, 2)
             }
 
             is AddEditEMIEvent.EnteredMonths -> {
-                if (event.value.isEmpty()) {
-                    _months.value = event.value
-                }
-                if (event.value.toIntOrNull() != null && event.value.toInt() > 0) {
-                    _months.value = event.value
-                }
+                _interestRate.value = TextInputState(event.value).validateInRange(1, 2147483647)
             }
 
             is AddEditEMIEvent.EnteredStartDate -> {
@@ -149,21 +127,35 @@ class AddEditEMIViewModel @Inject constructor(
             }
 
             is AddEditEMIEvent.SelectedCard -> {
-                _selectedCreditCard.intValue = event.value.id
+                _selectedCreditCard.intValue = event.value
+            }
+
+            is AddEditEMIEvent.EnteredTaxRate -> {
+                if (event.value.isEmpty()) {
+                    _taxRate.value = TextInputState(event.value)
+                } else {
+                    _taxRate.value =
+                        TextInputState(event.value).validateInRange(1, 21474836, 2)
+                }
+
             }
 
             is AddEditEMIEvent.UpsertEMI -> {
                 viewModelScope.launch {
+                    if (!validateEMIData()) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Please fix the errors"))
+                        return@launch
+                    }
                     emiUseCases.upsertEMI(
                         EMI(
                             id = currentEMIId.value,
-                            name = name.value,
-                            amount = emiAmount.value.toFloat(),
-                            rate = interestRate.value.toFloat(),
-                            months = months.value.toInt(),
+                            name = name.value.data,
+                            amount = (emiAmount.value.data.toInt() / 100F),
+                            rate = (interestRate.value.data.toInt() / 100F),
+                            months = months.value.data.toInt(),
                             date = emiDate.value,
-                            taxRate = taxRate.value.toFloat(),
-                            card = if (_selectedCreditCard.intValue != -1) _selectedCreditCard.intValue else null
+                            card = if (_selectedCreditCard.intValue != -1) _selectedCreditCard.intValue else null,
+                            taxRate = if (taxRate.value.data.isEmpty()) null else (taxRate.value.data.toInt() / 100F)
                         )
                     )
                     _eventFlow.emit(UiEvent.NavigateUp)
@@ -201,8 +193,19 @@ class AddEditEMIViewModel @Inject constructor(
 
     fun getCCDisplay(): String {
         val cc: CreditCard =
-            creditCards.value.find { it.id == selectedCreditCard.value } ?: return ""
+            creditCards.value.find { it.id == _selectedCreditCard.intValue } ?: return ""
         return "${cc.cardName} (${cc.last4Digits})"
+    }
+
+    private fun validateEMIData(): Boolean {
+        if (_name.value.error || _emiAmount.value.error || _interestRate.value.error || _months.value.error) {
+            _name.value = _name.value.copy(displayError = true)
+            _emiAmount.value = _emiAmount.value.copy(displayError = true)
+            _interestRate.value = _interestRate.value.copy(displayError = true)
+            _months.value = _months.value.copy(displayError = true)
+            return false
+        }
+        return true
     }
 
     sealed class UiEvent {

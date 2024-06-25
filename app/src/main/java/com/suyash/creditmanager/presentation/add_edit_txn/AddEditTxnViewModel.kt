@@ -58,7 +58,6 @@ class AddEditTxnViewModel @Inject constructor(
     val name: State<TextInputState<String>> = _name
 
     private val _selectedCreditCard = mutableIntStateOf(-1)
-    private val selectedCreditCard: State<Int> = _selectedCreditCard
 
     private val _txnType = mutableStateOf(TransactionType.DEBIT)
     val txnType: State<TransactionType> = _txnType
@@ -90,7 +89,8 @@ class AddEditTxnViewModel @Inject constructor(
                         _txnType.value = transaction.type
                         _txnCategory.value = transaction.category ?: ""
                         _txnDate.value = transaction.date
-                        _txnAmount.value = TextInputState(transaction.amount.toString())
+                        _txnAmount.value =
+                            TextInputState((transaction.amount * 100).toInt().toString())
                     }
                 }
             }
@@ -98,6 +98,7 @@ class AddEditTxnViewModel @Inject constructor(
         viewModelScope.launch {
             dataStore.data.collect {
                 _countryCode.value = it.countryCode
+                _dateFormatter.value = it.dateFormat.formatter
             }
         }
     }
@@ -132,11 +133,11 @@ class AddEditTxnViewModel @Inject constructor(
 
             is AddEditTxnEvent.UpsertTransaction -> {
                 viewModelScope.launch {
-                    if(_selectedCreditCard.intValue == -1) {
+                    if (_selectedCreditCard.intValue == -1) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please select a credit card"))
                         return@launch
                     }
-                    if(!validateTxnData()) {
+                    if (!validateTxnData()) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fix the errors"))
                         return@launch
                     }
@@ -144,7 +145,7 @@ class AddEditTxnViewModel @Inject constructor(
                         Transaction(
                             id = currentTxnId.value,
                             name = name.value.data,
-                            card = selectedCreditCard.value,
+                            card = _selectedCreditCard.intValue,
                             type = txnType.value,
                             category = txnCategory.value,
                             date = txnDate.value,
@@ -177,7 +178,7 @@ class AddEditTxnViewModel @Inject constructor(
 
     fun getCCDisplay(): String {
         val cc: CreditCard =
-            creditCards.value.find { it.id == selectedCreditCard.value } ?: return ""
+            creditCards.value.find { it.id == _selectedCreditCard.intValue } ?: return ""
         return "${cc.cardName} (${cc.last4Digits})"
     }
 
