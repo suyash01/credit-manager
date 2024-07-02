@@ -1,7 +1,5 @@
 package com.suyash.creditmanager.presentation.add_edit_emi
 
-import java.time.LocalDate
-
 sealed class AddEditEMIEvent {
     data class SelectedCard(val value: Int): AddEditEMIEvent()
     data class EnteredName(val value: String): AddEditEMIEvent()
@@ -9,7 +7,7 @@ sealed class AddEditEMIEvent {
     data class EnteredRate(val value: String): AddEditEMIEvent()
     data class EnteredTaxRate(val value: String): AddEditEMIEvent()
     data class EnteredMonths(val value: String): AddEditEMIEvent()
-    data class EnteredStartDate(val value: LocalDate): AddEditEMIEvent()
+    data class EnteredStartDate(val value: Long?): AddEditEMIEvent()
     data object UpsertEMI: AddEditEMIEvent()
     data object BackPressed: AddEditEMIEvent()
 }

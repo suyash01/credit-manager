@@ -74,9 +74,7 @@ fun CreditCardItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = creditCard.expiryDate.substring(0..1) +
-                                "/" +
-                                creditCard.expiryDate.substring(2),
+                        text = creditCard.expiryDate.replaceRange(2,2, "/"),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

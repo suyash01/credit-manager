@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
@@ -43,55 +44,39 @@ fun CreditManager(
                     val selected = navController.currentBackStackEntryAsState()
                         .value?.destination?.hierarchy?.any {
                             it.route == screen.route
-                        } == true
+                        } ?: false
 
-                    if (viewModel.bottomNavLabel.value) {
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.popBackStack()
-                                navController.navigate(screen.route)
-                            },
-                            icon = {
-                                val icon: ImageVector = if (selected) {
-                                    screen.selectedIcon
-                                } else {
-                                    screen.unselectedIcon
-                                }
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = screen.title
-                                )
-                            },
-                            label = {
-                                Text(text = screen.title)
+                    NavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                            navController.popBackStack()
+                            navController.navigate(screen.route)
+                        },
+                        icon = {
+                            val icon: ImageVector = if (selected) {
+                                screen.selectedIcon
+                            } else {
+                                screen.unselectedIcon
                             }
-                        )
-                    } else {
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.popBackStack()
-                                navController.navigate(screen.route)
-                            },
-                            icon = {
-                                val icon: ImageVector = if (selected) {
-                                    screen.selectedIcon
-                                } else {
-                                    screen.unselectedIcon
-                                }
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = screen.title
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = screen.title
+                            )
+                        },
+                        label = {
+                            if (viewModel.bottomNavLabel.value) {
+                                Text(
+                                    text = screen.title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
-    ) {
-        paddingValues ->
+    ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             NavHost(
                 navController = navController,
@@ -100,10 +85,26 @@ fun CreditManager(
                 composable(route = Screen.CreditCardsScreen.route) {
                     CreditCardsScreen(navController = navController)
                 }
-                composable(route = Screen.TransactionsScreen.route) {
+                composable(
+                    route = Screen.TransactionsScreen.route + "?ccId={ccId}",
+                    arguments = listOf(
+                        navArgument(name = "ccId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
                     TransactionsScreen(navController = navController)
                 }
-                composable(route = Screen.EMIsScreen.route) {
+                composable(
+                    route = Screen.EMIsScreen.route + "?ccId={ccId}",
+                    arguments = listOf(
+                        navArgument(name = "ccId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
                     EMIsScreen(navController = navController)
                 }
                 composable(route = Screen.SettingsScreen.route) {

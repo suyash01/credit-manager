@@ -107,7 +107,9 @@ fun CreditCardsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
-                            onClick = { },
+                            onClick = {
+                                navController.navigate(Screen.CCDetailScreen.route + "?ccId=${creditCard.id}")
+                            },
                             onLongClick = {
                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                 viewModel.onEvent(CreditCardsEvent.ToggleBottomSheet(creditCard))

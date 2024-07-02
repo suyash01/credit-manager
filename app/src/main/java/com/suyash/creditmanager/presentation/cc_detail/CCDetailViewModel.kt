@@ -9,6 +9,7 @@ import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCases
+import com.suyash.creditmanager.domain.util.DateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +28,8 @@ class CCDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     var creditCard: CreditCard? = null
+    var countryCode: String = "IN"
+    var dateFormat: DateFormat = DateFormat.DDMMYYYY
 
     private var getCCDataJob: Job? = null
 
@@ -34,6 +37,12 @@ class CCDetailViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
+        viewModelScope.launch {
+            dataStore.data.collect {
+                countryCode = it.countryCode
+                dateFormat = it.dateFormat
+            }
+        }
         savedStateHandle.get<Int>("ccId")?.let {
             getCreditCardData(it)
         }

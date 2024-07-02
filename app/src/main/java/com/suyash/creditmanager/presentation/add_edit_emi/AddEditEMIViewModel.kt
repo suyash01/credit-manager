@@ -26,8 +26,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -89,8 +92,9 @@ class AddEditEMIViewModel @Inject constructor(
                         _emiDate.value = it.date
                         _selectedCreditCard.intValue = it.card ?: -1
                         _taxRate.value =
-                            TextInputState(it.taxRate?.let { tr -> tr * 100 }?.toInt()?.toString()
-                                ?: ""
+                            TextInputState(
+                                it.taxRate?.let { tr -> tr * 100 }?.toInt()?.toString()
+                                    ?: ""
                             )
                     }
                 }
@@ -123,7 +127,10 @@ class AddEditEMIViewModel @Inject constructor(
             }
 
             is AddEditEMIEvent.EnteredStartDate -> {
-                _emiDate.value = event.value
+                _emiDate.value = Instant.ofEpochMilli(
+                    event.value?:
+                    TimeUnit.DAYS.toMillis(LocalDate.now().toEpochDay())
+                ).atZone(ZoneId.systemDefault()).toLocalDate()
             }
 
             is AddEditEMIEvent.SelectedCard -> {

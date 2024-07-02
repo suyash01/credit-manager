@@ -27,8 +27,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -123,7 +126,10 @@ class AddEditTxnViewModel @Inject constructor(
             }
 
             is AddEditTxnEvent.EnteredDate -> {
-                _txnDate.value = event.value
+                _txnDate.value = Instant.ofEpochMilli(
+                    event.value?:
+                    TimeUnit.DAYS.toMillis(LocalDate.now().toEpochDay())
+                ).atZone(ZoneId.systemDefault()).toLocalDate()
             }
 
             is AddEditTxnEvent.EnteredAmount -> {
