@@ -30,6 +30,21 @@ fun formatCurrencyAmount(
     }
 }
 
+fun nextEmiDate(
+    emiDate: LocalDate,
+    months: Int,
+    dateFormat: DateFormat
+): String {
+    var nextEmiDate = LocalDate.now().withDayOfMonth(emiDate.dayOfMonth)
+    if (nextEmiDate.isBefore(LocalDate.now())) {
+        nextEmiDate = nextEmiDate.plusMonths(1)
+    }
+    if (nextEmiDate.isBefore(emiDate.plusMonths(months - 1L))) {
+        return formatDate(nextEmiDate, dateFormat)
+    }
+    return "Finished"
+}
+
 fun nextBillDate(
     billDate: Int,
     dateFormat: DateFormat

@@ -34,7 +34,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.presentation.commons.Screen
 import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
+import com.suyash.creditmanager.presentation.commons.nextEmiDate
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDate
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +110,25 @@ fun EMIDetailScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Next EMI:",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = nextEmiDate(
+                        viewModel.emi?.date ?: LocalDate.now(),
+                        viewModel.emi?.months ?: 0,
+                        viewModel.dateFormat
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

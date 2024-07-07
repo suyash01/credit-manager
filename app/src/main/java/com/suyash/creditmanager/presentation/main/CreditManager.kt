@@ -8,6 +8,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
@@ -15,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
@@ -39,20 +41,21 @@ fun CreditManager(
         bottomBar = {
             NavigationBar {
                 Screen.bottomBarScreens.forEach { screen ->
-                    val selected = try {
-                        navController.getBackStackEntry(screen.route)
-                        true
-                    } catch (e: IllegalArgumentException) {
-                        false
-                    }
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    val selected = currentRoute?.startsWith(screen.route) ?: false
 
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
-                            if (!selected) {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.id)
+                            navController.navigate(screen.route) {
+                                navController.graph.startDestinationRoute?.let { route ->
+                                    popUpTo(route) {
+                                        saveState = true
+                                    }
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         },
                         icon = {
