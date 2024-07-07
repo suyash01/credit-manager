@@ -12,11 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.suyash.creditmanager.presentation.add_edit_cc.AddEditCCScreen
@@ -41,16 +39,21 @@ fun CreditManager(
         bottomBar = {
             NavigationBar {
                 Screen.bottomBarScreens.forEach { screen ->
-                    val selected = navController.currentBackStackEntryAsState()
-                        .value?.destination?.hierarchy?.any {
-                            it.route == screen.route
-                        } ?: false
+                    val selected = try {
+                        navController.getBackStackEntry(screen.route)
+                        true
+                    } catch (e: IllegalArgumentException) {
+                        false
+                    }
 
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
-                            navController.popBackStack()
-                            navController.navigate(screen.route)
+                            if (!selected) {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.id)
+                                }
+                            }
                         },
                         icon = {
                             val icon: ImageVector = if (selected) {
