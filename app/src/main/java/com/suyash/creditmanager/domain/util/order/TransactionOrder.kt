@@ -1,4 +1,4 @@
-package com.suyash.creditmanager.domain.util
+package com.suyash.creditmanager.domain.util.order
 
 sealed class TransactionOrder(val orderType: OrderType) {
     class Date(orderType: OrderType): TransactionOrder(orderType)

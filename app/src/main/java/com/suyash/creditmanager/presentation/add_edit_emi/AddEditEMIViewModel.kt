@@ -13,8 +13,8 @@ import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
 import com.suyash.creditmanager.domain.util.CardType
-import com.suyash.creditmanager.domain.util.CreditCardOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 import com.suyash.creditmanager.presentation.commons.TextInputState
 import com.suyash.creditmanager.presentation.commons.validateInRange
 import com.suyash.creditmanager.presentation.commons.validateMinMaxLength

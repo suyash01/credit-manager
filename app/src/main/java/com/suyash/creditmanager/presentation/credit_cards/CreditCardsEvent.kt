@@ -1,7 +1,7 @@
 package com.suyash.creditmanager.presentation.credit_cards
 
 import com.suyash.creditmanager.domain.model.CreditCard
-import com.suyash.creditmanager.domain.util.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
 
 sealed class CreditCardsEvent {
     data class Order(val creditCardsOrder: CreditCardOrder): CreditCardsEvent()

@@ -42,6 +42,10 @@ data class EMI(
         return min(emiPaid, months)
     }
 
+    fun emisRemaining(): Int {
+        return months - emisPaid()
+    }
+
     fun toEmiBackup() =
         EmiBackup (
             name = this.name,

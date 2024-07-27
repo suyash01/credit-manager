@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
-import com.suyash.creditmanager.domain.util.CreditCardOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn

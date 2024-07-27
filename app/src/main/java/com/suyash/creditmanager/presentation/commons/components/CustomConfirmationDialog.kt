@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ConfirmationDialog(
+fun CustomConfirmationDialog(
     title: String,
     description: String,
     warningMessage: String? = null,
@@ -88,7 +88,7 @@ fun ConfirmationDialog(
 @Preview(showBackground = true)
 @Composable
 fun ConfirmationDialogPreview() {
-    ConfirmationDialog(title = "Delete Credit Card?",
+    CustomConfirmationDialog(title = "Delete Credit Card?",
         description = "Do you want to delete XXX",
         warningMessage = "This will delete associated transaction(s) and emi(s)",
         onDismissRequest = { },

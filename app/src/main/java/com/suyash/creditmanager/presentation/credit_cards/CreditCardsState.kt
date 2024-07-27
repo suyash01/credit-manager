@@ -1,9 +1,11 @@
 package com.suyash.creditmanager.presentation.credit_cards
 
+import androidx.compose.runtime.Immutable
 import com.suyash.creditmanager.domain.model.CreditCard
-import com.suyash.creditmanager.domain.util.CreditCardOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 
+@Immutable
 data class CreditCardsState(
     val creditCards: List<CreditCard> = emptyList(),
     val creditCardsOrder: CreditCardOrder = CreditCardOrder.Name(OrderType.Ascending),

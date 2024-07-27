@@ -1,7 +1,7 @@
 package com.suyash.creditmanager.presentation.transactions
 
 import com.suyash.creditmanager.domain.model.Transaction
-import com.suyash.creditmanager.domain.util.TransactionOrder
+import com.suyash.creditmanager.domain.util.order.TransactionOrder
 
 sealed class TransactionsEvent {
     data class Order(val transactionOrder: TransactionOrder): TransactionsEvent()

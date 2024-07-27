@@ -2,8 +2,8 @@ package com.suyash.creditmanager.domain.use_case.credit_card
 
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.repository.CreditCardRepository
-import com.suyash.creditmanager.domain.util.CreditCardOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

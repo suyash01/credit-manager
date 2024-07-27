@@ -43,7 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.presentation.transactions.component.TransactionItem
 import com.suyash.creditmanager.presentation.commons.Screen
-import com.suyash.creditmanager.presentation.commons.components.ConfirmationDialog
+import com.suyash.creditmanager.presentation.commons.components.CustomConfirmationDialog
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -124,7 +124,7 @@ fun TransactionsScreen(
             }
         }
         if (openDeleteConfirmationDialog) {
-            ConfirmationDialog(
+            CustomConfirmationDialog(
                 title = "Delete Transaction?",
                 description = "Do you want to delete the transaction?",
                 onDismissRequest = { openDeleteConfirmationDialog = false },

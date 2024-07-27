@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suyash.creditmanager.data.settings.AppSettings
 import com.suyash.creditmanager.domain.use_case.EMIUseCases
-import com.suyash.creditmanager.domain.util.EMIOrder
+import com.suyash.creditmanager.domain.util.order.EMIOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -51,6 +51,13 @@ class EMIsViewModel @Inject constructor(
                         emiUseCases.deleteEMI(event.emi)
                     }
                 }
+            }
+            is EMIsEvent.Order -> {
+                if(state.value.emiOrder::class == event.emiOrder::class &&
+                    state.value.emiOrder.orderType == event.emiOrder.orderType) {
+                    return
+                }
+                getEMIs(event.emiOrder)
             }
         }
     }

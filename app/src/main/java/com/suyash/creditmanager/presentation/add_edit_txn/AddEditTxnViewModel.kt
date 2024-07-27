@@ -14,8 +14,8 @@ import com.suyash.creditmanager.domain.model.TxnCategory
 import com.suyash.creditmanager.domain.use_case.CreditCardUseCases
 import com.suyash.creditmanager.domain.use_case.TransactionUseCases
 import com.suyash.creditmanager.domain.use_case.TxnCategoryUseCases
-import com.suyash.creditmanager.domain.util.CreditCardOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.CreditCardOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 import com.suyash.creditmanager.domain.util.TransactionType
 import com.suyash.creditmanager.presentation.commons.TextInputState
 import com.suyash.creditmanager.presentation.commons.validateInRange

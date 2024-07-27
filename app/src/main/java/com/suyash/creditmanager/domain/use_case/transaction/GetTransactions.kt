@@ -2,8 +2,8 @@ package com.suyash.creditmanager.domain.use_case.transaction
 
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.repository.TransactionRepository
-import com.suyash.creditmanager.domain.util.OrderType
-import com.suyash.creditmanager.domain.util.TransactionOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
+import com.suyash.creditmanager.domain.util.order.TransactionOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

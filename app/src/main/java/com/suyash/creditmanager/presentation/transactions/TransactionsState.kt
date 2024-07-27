@@ -3,8 +3,8 @@ package com.suyash.creditmanager.presentation.transactions
 import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.util.DateFormat
-import com.suyash.creditmanager.domain.util.OrderType
-import com.suyash.creditmanager.domain.util.TransactionOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
+import com.suyash.creditmanager.domain.util.order.TransactionOrder
 
 data class TransactionsState(
     val creditCards: Map<Int, CreditCard> = emptyMap(),

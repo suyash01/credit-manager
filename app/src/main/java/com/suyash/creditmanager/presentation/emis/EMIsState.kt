@@ -2,8 +2,8 @@ package com.suyash.creditmanager.presentation.emis
 
 import com.suyash.creditmanager.domain.model.EMI
 import com.suyash.creditmanager.domain.util.DateFormat
-import com.suyash.creditmanager.domain.util.EMIOrder
-import com.suyash.creditmanager.domain.util.OrderType
+import com.suyash.creditmanager.domain.util.order.EMIOrder
+import com.suyash.creditmanager.domain.util.order.OrderType
 
 data class EMIsState(
     val emis: List<EMI> = emptyList(),
