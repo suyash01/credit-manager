@@ -72,7 +72,7 @@ fun EMIsScreen(
                     IconButton(onClick = { isSortBottomSheetOpen = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Sort,
-                            contentDescription = "Sort Credit Cards"
+                            contentDescription = "Sort EMIs"
                         )
                     }
                 }

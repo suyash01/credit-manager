@@ -39,7 +39,7 @@ fun CustomActionBottomSheet(
                             it.onClick()
                         }
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Icon(it.icon, it.iconName)
                     Text(text = it.title, modifier = Modifier.padding(start = 16.dp))

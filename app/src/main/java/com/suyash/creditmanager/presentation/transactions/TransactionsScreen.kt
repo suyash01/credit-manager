@@ -2,28 +2,25 @@ package com.suyash.creditmanager.presentation.transactions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,9 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.suyash.creditmanager.domain.util.order.TransactionOrder
 import com.suyash.creditmanager.presentation.transactions.component.TransactionItem
 import com.suyash.creditmanager.presentation.commons.Screen
+import com.suyash.creditmanager.presentation.commons.components.CustomActionBottomSheet
 import com.suyash.creditmanager.presentation.commons.components.CustomConfirmationDialog
+import com.suyash.creditmanager.presentation.commons.components.CustomSortingBottomSheet
+import com.suyash.creditmanager.presentation.commons.model.ItemAction
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -52,8 +53,10 @@ fun TransactionsScreen(
     viewModel: TransactionsViewModel = hiltViewModel()
 ) {
     val haptics = LocalHapticFeedback.current
-    val bottomSheetState = rememberModalBottomSheetState()
-    var isBottomSheetOpen by rememberSaveable {
+    var isItemBottomSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isSortBottomSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
     var openDeleteConfirmationDialog by rememberSaveable {
@@ -69,6 +72,14 @@ fun TransactionsScreen(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Transactions") },
+                actions = {
+                    IconButton(onClick = { isSortBottomSheetOpen = true }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Sort,
+                            contentDescription = "Sort Transactions"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -116,7 +127,7 @@ fun TransactionsScreen(
                                             transaction
                                         )
                                     )
-                                    isBottomSheetOpen = true
+                                    isItemBottomSheetOpen = true
                                 }
                             )
                     )
@@ -139,43 +150,39 @@ fun TransactionsScreen(
                 onDismissButton = { openDeleteConfirmationDialog = false }
             )
         }
-        if (isBottomSheetOpen) {
-            ModalBottomSheet(
-                sheetState = bottomSheetState,
-                onDismissRequest = { isBottomSheetOpen = false }
-            ) {
-                Column(
-                    modifier = Modifier.padding(bottom = 16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                isBottomSheetOpen = false
-                                navController.navigate(
-                                    Screen.AddEditTxnScreen.route +
-                                            "?txnId=${viewModel.state.value.selectedTransaction?.id}"
-                                )
-                            }
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Icon(Icons.Filled.Edit, "Edit Txn")
-                        Text(text = "Edit", modifier = Modifier.padding(start = 16.dp))
-                    }
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                isBottomSheetOpen = false
-                                openDeleteConfirmationDialog = true
-                            }
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Icon(Icons.Filled.Delete, "Delete Txn")
-                        Text(text = "Delete", modifier = Modifier.padding(start = 16.dp))
-                    }
-                }
-            }
+        if (isItemBottomSheetOpen) {
+            CustomActionBottomSheet(
+                onDismissRequest = { isItemBottomSheetOpen = false },
+                actions = listOf(
+                    ItemAction(
+                        icon = Icons.Filled.Edit,
+                        iconName = "Edit Transaction",
+                        title = "Edit",
+                        onClick = {
+                            navController.navigate(
+                                Screen.AddEditCCScreen.route +
+                                        "?ccId=${viewModel.state.value.selectedTransaction?.id}"
+                            )
+                        }
+                    ),
+                    ItemAction(
+                        icon = Icons.Filled.Delete,
+                        iconName = "Delete Transaction",
+                        title = "Delete",
+                        onClick = {
+                            openDeleteConfirmationDialog = true
+                        }
+                    )
+                )
+            )
+        }
+        if (isSortBottomSheetOpen) {
+            CustomSortingBottomSheet(
+                onDismissRequest = { isSortBottomSheetOpen = false },
+                orderList = TransactionOrder.getOrderList(),
+                currentOrder = viewModel.state.value.transactionOrder,
+                sort = { viewModel.onEvent(TransactionsEvent.Order(it)) }
+            )
         }
     }
 }

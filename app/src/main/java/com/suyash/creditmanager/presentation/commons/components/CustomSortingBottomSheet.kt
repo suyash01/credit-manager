@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.suyash.creditmanager.domain.util.order.Order
 import com.suyash.creditmanager.domain.util.order.OrderType
-import kotlin.reflect.full.primaryConstructor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,15 +43,9 @@ fun <T : Order> CustomSortingBottomSheet(
                         .clickable {
                             onDismissRequest()
                             if (currentOrder::class == it::class) {
-                                sort(
-                                    currentOrder::class.primaryConstructor!!.call(
-                                        currentOrder.orderType.getReverse(),
-                                        currentOrder.label
-                                    )
-                                )
-                            } else {
-                                sort(it)
+                                it.orderType = currentOrder.orderType.getReverse()
                             }
+                            sort(it)
                         }
                         .fillMaxWidth()
                         .padding(16.dp)

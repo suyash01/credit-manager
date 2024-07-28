@@ -1,7 +1,7 @@
 package com.suyash.creditmanager.domain.util.order
 
 sealed class CreditCardOrder(
-    override val orderType: OrderType,
+    override var orderType: OrderType,
     override val label: String
 ) : Order {
     class Name(orderType: OrderType, label: String = "Name") : CreditCardOrder(orderType, label)

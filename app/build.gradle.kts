@@ -16,8 +16,8 @@ android {
         applicationId = "com.suyash.creditmanager"
         minSdk = 26
         targetSdk = 35
-        versionCode = 24
-        versionName = "1.0.23"
+        versionCode = 25
+        versionName = "1.0.24"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -35,6 +35,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("staging") {
+            applicationIdSuffix = ".staging"
+            isDebuggable = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules-staging.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -63,7 +73,6 @@ dependencies {
     val roomVersion = "2.6.1"
     val navVersion = "2.7.7"
     val workVersion = "2.9.0"
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.appcompat:appcompat:1.7.0")
