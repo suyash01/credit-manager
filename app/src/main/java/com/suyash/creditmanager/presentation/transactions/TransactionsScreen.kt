@@ -1,7 +1,6 @@
 package com.suyash.creditmanager.presentation.transactions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,9 +32,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.suyash.creditmanager.domain.util.order.TransactionOrder
@@ -85,17 +82,18 @@ fun TransactionsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.onGloballyPositioned { fabHeight = it.size.height },
-                onClick = { navController.navigate(Screen.AddEditTxnScreen.route) }
+                onClick = { navController.navigate(Screen.AddEditTxnScreen.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Filled.Add, "Add Transaction")
             }
         }
     ) { contentPadding ->
         LazyColumn(
-            modifier = Modifier
-                .padding(contentPadding),
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
-                bottom = fabHeightInDp + 16.dp
+                bottom = contentPadding.calculateBottomPadding() + fabHeightInDp + 16.dp
             )
         ) {
             val groupedTxn = viewModel.state.value.transactions.groupBy { it.date }
@@ -103,12 +101,11 @@ fun TransactionsScreen(
                 stickyHeader {
                     Text(
                         text = date.format(viewModel.state.value.dateFormat.formatter),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 16.dp)
+                            .padding(start = 32.dp)
                     )
                 }
                 items(transactions) { transaction ->

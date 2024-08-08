@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -16,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -67,7 +67,9 @@ fun CreditCardsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Credit Cards") },
+                title = {
+                    Text(text = "Credit Cards")
+                },
                 actions = {
                     IconButton(onClick = { isSortBottomSheetOpen = true }) {
                         Icon(
@@ -81,17 +83,18 @@ fun CreditCardsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.onGloballyPositioned { fabHeight = it.size.height },
-                onClick = { navController.navigate(Screen.AddEditCCScreen.route) }
+                onClick = { navController.navigate(Screen.AddEditCCScreen.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Filled.Add, "Add Credit Card")
             }
         }
     ) { contentPadding ->
         LazyColumn(
-            modifier = Modifier
-                .padding(contentPadding),
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
-                bottom = fabHeightInDp + 16.dp
+                bottom = contentPadding.calculateBottomPadding() + fabHeightInDp + 16.dp
             )
         ) {
             items(viewModel.state.value.creditCards) { creditCard ->

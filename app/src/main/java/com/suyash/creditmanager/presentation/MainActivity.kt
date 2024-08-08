@@ -13,7 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import com.suyash.creditmanager.presentation.main.CreditManager
-import com.suyash.creditmanager.ui.theme.CreditManagerTheme
+import com.suyash.creditmanager.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            CreditManagerTheme {
+            AppTheme(dynamicColor = false) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
