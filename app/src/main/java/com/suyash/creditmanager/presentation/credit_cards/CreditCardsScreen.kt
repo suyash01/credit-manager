@@ -94,6 +94,7 @@ fun CreditCardsScreen(
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
+                top = contentPadding.calculateTopPadding(),
                 bottom = contentPadding.calculateBottomPadding() + fabHeightInDp + 16.dp
             )
         ) {

@@ -117,7 +117,7 @@ fun TxnCategoriesScreen(
                 ) {
                     Text(
                         text = txnType.name,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(8.dp)
                     )
