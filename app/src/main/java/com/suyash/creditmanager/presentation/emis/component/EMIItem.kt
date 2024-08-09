@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +29,20 @@ fun EMIItem(
     dateFormat: DateFormat,
     modifier: Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 8.dp)
+    Card(
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
+        )
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 8.dp)
         ) {
             Column(
                 modifier = Modifier

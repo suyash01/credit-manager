@@ -4,8 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +23,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.RadioButton
@@ -34,7 +31,6 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -59,6 +55,8 @@ import com.suyash.creditmanager.BuildConfig
 import com.suyash.creditmanager.data.backup.BackupWorker
 import com.suyash.creditmanager.domain.util.DateFormat
 import com.suyash.creditmanager.presentation.commons.Screen
+import com.suyash.creditmanager.presentation.settings.component.SettingsItem
+import com.suyash.creditmanager.presentation.settings.component.SettingsToggle
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
 
@@ -95,7 +93,7 @@ fun SettingsScreen(
     val chooseRestoreFile = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
     ) {
-        if (it!= null) {
+        if (it != null) {
             BackupWorker.startNow(context, it, "RESTORE")
             viewModel.onEvent(SettingsEvent.ShowSnackbar("Restore job started"))
         }
@@ -103,12 +101,13 @@ fun SettingsScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is SettingsViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
+
                 is SettingsViewModel.UiEvent.NavigateUp -> {
                     navController.navigateUp()
                 }
@@ -125,156 +124,50 @@ fun SettingsScreen(
                 title = { Text(text = "Settings") },
             )
         }
-    ) { paddingValues ->
+    ) { contentPadding ->
         Column(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding()
+                )
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        openCurrencyDialog = true
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Payments,
-                    contentDescription = "Currency Country",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Currency Country",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "${viewModel.countryCode.value} - ${
-                            Locale(
-                                "",
-                                viewModel.countryCode.value
-                            ).displayName
-                        }",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        openDateFormatDialog = true
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CalendarToday,
-                    contentDescription = "Date Format",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Date Format",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = viewModel.dateFormat.value.format,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate(Screen.TxnCategoriesScreen.route)
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Category,
-                    contentDescription = "Transaction Categories",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Transaction Categories",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "${viewModel.txnCategoryCount} Categories",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.Label,
-                    contentDescription = "Bottom Nav Labels",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Bottom Nav Labels",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Switch(
-                        checked = viewModel.bottomNavLabel.value,
-                        onCheckedChange = {
-                            viewModel.onEvent(SettingsEvent.UpdateBottomNavLabel(it))
-                        }
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        uriHandler.openUri("https://github.com/suyash01/credit-manager/releases")
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "Check for Updates",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Check for Updates",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "v${BuildConfig.VERSION_NAME}",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
+            SettingsItem(
+                icon = Icons.Outlined.Payments,
+                title = "Currency Country",
+                description = "${viewModel.countryCode.value} - ${
+                    Locale(
+                        "",
+                        viewModel.countryCode.value
+                    ).displayName
+                }",
+                onClick = { openCurrencyDialog = true }
+            )
+            SettingsItem(
+                icon = Icons.Outlined.CalendarToday,
+                title = "Date Format",
+                description = viewModel.dateFormat.value.format,
+                onClick = { openDateFormatDialog = true }
+            )
+            SettingsItem(
+                icon = Icons.Outlined.Category,
+                title = "Transaction Categories",
+                description = "${viewModel.txnCategoryCount} Categories",
+                onClick = { navController.navigate(Screen.TxnCategoriesScreen.route) }
+            )
+            SettingsToggle(
+                icon = Icons.AutoMirrored.Outlined.Label,
+                title = "Bottom Nav Labels",
+                checked = viewModel.bottomNavLabel.value,
+                onClick = { viewModel.onEvent(SettingsEvent.UpdateBottomNavLabel(it)) }
+            )
+            SettingsItem(
+                icon = Icons.Outlined.Info,
+                title = "Check for Updates",
+                description = "v${BuildConfig.VERSION_NAME}",
+                onClick = { uriHandler.openUri("https://github.com/suyash01/credit-manager/releases") }
+            )
             Spacer(modifier = Modifier.height(16.dp))
             MultiChoiceSegmentedButtonRow(
                 modifier = Modifier
@@ -287,7 +180,7 @@ fun SettingsScreen(
                         if (!BackupWorker.isManualJobRunning(context)) {
                             try {
                                 chooseBackupFile.launch(viewModel.getFilename())
-                            }  catch (e: ActivityNotFoundException) {
+                            } catch (e: ActivityNotFoundException) {
                                 viewModel.onEvent(SettingsEvent.ShowSnackbar("File picker error"))
                             }
                         } else {
@@ -304,7 +197,7 @@ fun SettingsScreen(
                         if (!BackupWorker.isManualJobRunning(context)) {
                             try {
                                 chooseRestoreFile.launch(arrayOf("application/json"))
-                            }  catch (e: ActivityNotFoundException) {
+                            } catch (e: ActivityNotFoundException) {
                                 viewModel.onEvent(SettingsEvent.ShowSnackbar("File picker error"))
                             }
                         } else {

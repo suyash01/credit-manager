@@ -48,11 +48,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     buildFeatures {
         buildConfig = true
@@ -72,7 +72,7 @@ dependencies {
     val hiltVersion = "2.51.1"
     val roomVersion = "2.6.1"
     val navVersion = "2.7.7"
-    val workVersion = "2.9.0"
+    val workVersion = "2.9.1"
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.appcompat:appcompat:1.7.0")

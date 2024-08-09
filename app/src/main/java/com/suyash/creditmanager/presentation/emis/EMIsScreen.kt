@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -16,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -81,18 +81,19 @@ fun EMIsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.onGloballyPositioned { fabHeight = it.size.height },
-                onClick = { navController.navigate(Screen.AddEditEMIScreen.route) }
+                onClick = { navController.navigate(Screen.AddEditEMIScreen.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Filled.Add, "Add EMI")
             }
         }
-    ) {
-        paddingValues ->
+    ) { contentPadding ->
         LazyColumn(
-            modifier = Modifier
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
-                bottom = fabHeightInDp + 16.dp
+                top = contentPadding.calculateTopPadding(),
+                bottom = contentPadding.calculateBottomPadding() + fabHeightInDp + 16.dp
             )
         ) {
             items(viewModel.state.value.emis) { emi ->
@@ -117,7 +118,7 @@ fun EMIsScreen(
                 )
             }
         }
-        if(openDeleteConfirmationDialog) {
+        if (openDeleteConfirmationDialog) {
             CustomConfirmationDialog(
                 title = "Delete EMI?",
                 description = "Do you want to delete ${viewModel.state.value.selectedEMI?.name}",
@@ -129,7 +130,7 @@ fun EMIsScreen(
                 onDismissButton = { openDeleteConfirmationDialog = false }
             )
         }
-        if(isItemBottomSheetOpen) {
+        if (isItemBottomSheetOpen) {
             CustomActionBottomSheet(
                 onDismissRequest = { isItemBottomSheetOpen = false },
                 actions = listOf(

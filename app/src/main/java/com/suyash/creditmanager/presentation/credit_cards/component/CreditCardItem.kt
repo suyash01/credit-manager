@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +29,20 @@ fun CreditCardItem(
     countryCode: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 8.dp)
+    Card(
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
+        )
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 8.dp)
         ) {
             Image(
                 modifier = Modifier.size(45.dp),
@@ -74,7 +83,7 @@ fun CreditCardItem(
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = creditCard.expiryDate.replaceRange(2,2, "/"),
+                        text = creditCard.expiryDate.replaceRange(2, 2, "/"),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -98,7 +107,8 @@ fun CreditCardItemPreview() {
             5,
             CardType.VISA,
             550000,
-            "ICICI"),
+            "ICICI"
+        ),
         countryCode = "IN",
         modifier = Modifier.fillMaxWidth()
     )

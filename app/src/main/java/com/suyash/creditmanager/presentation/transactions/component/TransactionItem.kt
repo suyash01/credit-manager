@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,8 +19,6 @@ import com.suyash.creditmanager.domain.model.CreditCard
 import com.suyash.creditmanager.domain.model.Transaction
 import com.suyash.creditmanager.domain.util.TransactionType
 import com.suyash.creditmanager.presentation.commons.formatCurrencyAmount
-import com.suyash.creditmanager.ui.theme.CreditForeground
-import com.suyash.creditmanager.ui.theme.DebitForeground
 
 @Composable
 fun TransactionItem(
@@ -27,13 +27,19 @@ fun TransactionItem(
     countryCode: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
+    Card(
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .padding(vertical = 8.dp)
         ) {
             Column(
@@ -48,12 +54,15 @@ fun TransactionItem(
                     Text(
                         text = transaction.name,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = formatCurrencyAmount(transaction.amount, countryCode),
+                        text = if (TransactionType.CREDIT == transaction.type) formatCurrencyAmount(
+                            transaction.amount,
+                            countryCode
+                        ) else "- ${formatCurrencyAmount(transaction.amount, countryCode)}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if(transaction.type == TransactionType.DEBIT) DebitForeground else CreditForeground
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -62,11 +71,11 @@ fun TransactionItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "${creditCard?.cardName?:"Deleted Credit Card"} (${creditCard?.last4Digits?:"XXXX"})",
+                        text = creditCard?.let { "${it.cardName} (${it.last4Digits})" } ?: "",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = transaction.category?:"",
+                        text = transaction.category ?: "",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
